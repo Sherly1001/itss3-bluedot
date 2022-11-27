@@ -4,8 +4,13 @@
   "private": true,
   "description": "",
   "workspaces": [
-    "services"
+    "services",
+    "frontend"
   ],
+  "scripts": {
+    "be": "yarn workspace services start:dev",
+    "fe": "yarn workspace frontend dev"
+  },
   "author": "",
   "license": "ISC"
 }
