@@ -111,7 +111,7 @@ export class UserService {
 
   async validateUser(email: string, password: string) {
     const user = await this.userModel.findOne({ email });
-    if (user && bcrypt.compare(password, user.hashPassword)) {
+    if (user && await bcrypt.compare(password, user.hashPassword)) {
       return user;
     }
     return null;
