@@ -43,14 +43,14 @@ function SignUp() {
             await axios.post('http://localhost:3000/user', body)
             navigate('/sign-in')
         }catch(e: any){
-            setError('Can not create new account! Try again.')
+            setError('新しいアカウントを作成できません!再試行。')
             throw new Error(e)
         }
     }
 
     return (
         <div className='form'>
-            <h3 className='heading'> Sign Up</h3>
+            <h3 className='heading'>サインアップ</h3>
             <Form
                 {...formItemLayout}
                 form={form}
@@ -64,7 +64,7 @@ function SignUp() {
             >
                 <Form.Item
                     name="username"
-                    label="Username"
+                    label="名前"
                     rules={[
                         {
                             required: true,
@@ -77,7 +77,7 @@ function SignUp() {
                 </Form.Item>
                 <Form.Item
                     name="email"
-                    label="E-mail"
+                    label="メール"
                     rules={[
                         {
                             type: 'email',
@@ -94,7 +94,7 @@ function SignUp() {
 
                 <Form.Item
                     name="password"
-                    label="Password"
+                    label="パスワード"
                     rules={[
                         {
                             required: true,
@@ -108,7 +108,7 @@ function SignUp() {
 
                 <Form.Item
                     name="confirm"
-                    label="Confirm Password"
+                    label="確認パスワード"
                     dependencies={['password']}
                     hasFeedback
                     rules={[
@@ -130,19 +130,20 @@ function SignUp() {
                 </Form.Item>
                 {error && <span style={{color: 'red'}}>{error}</span>}
                 <br />
-                <span>If you have an account click
+                <span>アカウントをお持ち場合は、
                     <NavLink
                         style={{ color: "blue" }}
                         to="/sign-in"
-                    > here
+                    >ここ
                     </NavLink>
+                    をクリックしてください。
                 </span>
                 <div>
                     <Button
                         className="form-btn"
                         type='primary'
                         htmlType="submit">
-                        Sign Up
+                        サインアップ
                     </Button>
                 </div>
             </Form>

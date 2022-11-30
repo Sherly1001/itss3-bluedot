@@ -128,17 +128,17 @@ function Header(props: Props) {
                     >
                         <NavLink to={'/'}>
                             <Button sx={{ color: '#fff' }}>
-                                Home
+                                ホーム
                             </Button>
                         </NavLink>
                         <NavLink to={'/products'}>
                             <Button sx={{ color: '#fff' }}>
-                                Products
+                                製品
                             </Button>
                         </NavLink>
                         <NavLink to={'/categories'}>
                             <Button sx={{ color: '#fff' }}>
-                                Categories
+                                カテゴリー
                             </Button>
                         </NavLink>
                     </Box>
@@ -169,20 +169,20 @@ function Header(props: Props) {
                                 open={Boolean(anchorEl)}
                                 onClose={handleClose}
                             >
-                                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                                <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
+                                <MenuItem onClick={handleClose}>プロフィール</MenuItem>
+                                <MenuItem onClick={handleSignOut}>サインアウト</MenuItem>
                             </Menu>
                         </Box>
                     ) : (
                         <Box sx={{ display: { xs: 'none', sm: 'block' }, paddingLeft: 2 }}>
                             <NavLink to={'/sign-in'}>
                                 <Button sx={{ color: '#fff' }}>
-                                    Sign In
+                                    サインイン
                                 </Button>
                             </NavLink>
                             <NavLink to={'/sign-up'}>
                                 <Button sx={{ color: '#fff' }}>
-                                    Sign Up
+                                    サインアップ
                                 </Button>
                             </NavLink>
                         </Box>
