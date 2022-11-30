@@ -3,7 +3,9 @@ import {
     Form,
     Input
 } from 'antd';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useState } from 'react';
 
 const formItemLayout = {
     labelCol: {
@@ -27,9 +29,23 @@ const formItemLayout = {
 function SignUp() {
 
     const [form] = Form.useForm();
+    const navigate = useNavigate();
+    const [error, setError] = useState<string>('');
 
-    const onFinish = (values: any) => {
+    const onFinish = async (values: any) => {
         console.log(values);
+        try{
+            const body = {
+                name: values.username,
+                email: values.email,
+                password: values.password
+            }
+            await axios.post('http://localhost:3000/user', body)
+            navigate('/sign-in')
+        }catch(e: any){
+            setError('Can not create new account! Try again.')
+            throw new Error(e)
+        }
     }
 
     return (
@@ -112,7 +128,8 @@ function SignUp() {
                 >
                     <Input.Password />
                 </Form.Item>
-
+                {error && <span style={{color: 'red'}}>{error}</span>}
+                <br />
                 <span>If you have an account click
                     <NavLink
                         style={{ color: "blue" }}

@@ -13,7 +13,10 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
 
 interface Props {
     /**
@@ -27,7 +30,23 @@ const drawerWidth = 240;
 
 function Header(props: Props) {
     const { window } = props;
+    const navigate = useNavigate();
     const [mobileOpen, setMobileOpen] = React.useState(false);
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+    const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleSignOut = () => {
+        localStorage.removeItem("token");
+        setAnchorEl(null);
+        navigate("/");
+    };
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
@@ -104,7 +123,6 @@ function Header(props: Props) {
                     <Box
                         sx={{
                             display: { xs: 'none', sm: 'block' },
-                            borderRight: '1px solid #fff',
                             pr: 2
                         }}
                     >
@@ -124,18 +142,51 @@ function Header(props: Props) {
                             </Button>
                         </NavLink>
                     </Box>
-                    <Box sx={{ display: { xs: 'none', sm: 'block' }, paddingLeft: 2 }}>
-                        <NavLink to={'/sign-in'}>
-                            <Button sx={{ color: '#fff' }}>
-                                Sign In
-                            </Button>
-                        </NavLink>
-                        <NavLink to={'/sign-up'}>
-                            <Button sx={{ color: '#fff' }}>
-                                Sign Up
-                            </Button>
-                        </NavLink>
-                    </Box>
+                    {localStorage.getItem('token') ? (
+                        <Box sx={{ display: { xs: 'none', sm: 'block' }, paddingLeft: 2 }}>
+                            <IconButton
+                                size="large"
+                                aria-label="account of current user"
+                                aria-controls="menu-appbar"
+                                aria-haspopup="true"
+                                onClick={handleMenu}
+                                color="inherit"
+                            >
+                                <AccountCircle />
+                            </IconButton>
+                            <Menu
+                                id="menu-appbar"
+                                anchorEl={anchorEl}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'right',
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                open={Boolean(anchorEl)}
+                                onClose={handleClose}
+                            >
+                                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                                <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
+                            </Menu>
+                        </Box>
+                    ) : (
+                        <Box sx={{ display: { xs: 'none', sm: 'block' }, paddingLeft: 2 }}>
+                            <NavLink to={'/sign-in'}>
+                                <Button sx={{ color: '#fff' }}>
+                                    Sign In
+                                </Button>
+                            </NavLink>
+                            <NavLink to={'/sign-up'}>
+                                <Button sx={{ color: '#fff' }}>
+                                    Sign Up
+                                </Button>
+                            </NavLink>
+                        </Box>
+                    )}
                 </Toolbar>
                 <Box component="nav">
                     <Drawer
@@ -155,7 +206,7 @@ function Header(props: Props) {
                     </Drawer>
                 </Box>
             </Container>
-        </AppBar>
+        </AppBar >
     );
 };
 
