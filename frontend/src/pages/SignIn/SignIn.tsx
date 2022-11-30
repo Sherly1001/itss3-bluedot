@@ -18,14 +18,14 @@ function SignIn() {
             localStorage.setItem('token', res.data.data.access_token)
             navigate('/')
         }catch(e: any){
-            setError('Your e-mail or password is invalid! Try again.')
+            setError('メールアドレスまたはパスワードが無効です!再試行。')
             throw new Error(e)
         }
     };
 
     return (
         <div className="form">
-            <h3 className="heading">Sign In</h3>
+            <h3 className="heading">サインイン</h3>
             <Form
                 name="normal_login"
                 className="login-form"
@@ -43,7 +43,7 @@ function SignIn() {
                         },
                     ]}
                 >
-                    <Input prefix={<MailOutlined className="site-form-item-icon" />} type="email" placeholder="E-mail" />
+                    <Input prefix={<MailOutlined className="site-form-item-icon" />} type="email" placeholder="メール" />
                 </Form.Item>
                 <Form.Item
                     name="password"
@@ -57,24 +57,26 @@ function SignIn() {
                     <Input
                         prefix={<LockOutlined className="site-form-item-icon" />}
                         type="password"
-                        placeholder="Password"
+                        placeholder="パスワード"
                     />
                 </Form.Item>
                 {error && <span style={{color: 'red'}}>{error}</span>}
                 <br/>
-                <span>If you dont have an account click
+                <span>
+                    アカウントをお持ちでない場合は、
                     <NavLink
                         style={{ color: "blue" }}
                         to="/sign-up"
-                    > here
+                    >ここ
                     </NavLink>
+                    をクリックしてください。
                 </span>
                 <div>
                     <Button
                         className="form-btn"
                         type='primary'
                         htmlType="submit">
-                        Sign In
+                        サインイン
                     </Button>
                 </div>
             </Form>
