@@ -1,12 +1,27 @@
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { LockOutlined, MailOutlined } from '@ant-design/icons';
 import { Button, Form, Input } from 'antd';
-import { NavLink } from 'react-router-dom';
+import axios from 'axios';
+import { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 function SignIn() {
-
-    const onFinish = (values: any) => {
-        console.log(values);
-    }
+    const navigate = useNavigate()
+    const [error, setError] = useState<string>('');
+    const onFinish = async (values: any) => {
+        console.log('Received values of form: ', values)
+        try {
+            const body = {
+                email: values.email,
+                password: values.password
+            }
+            const res = await axios.post('http://localhost:3000/user/login', body)
+            localStorage.setItem('token', res.data.data.access_token)
+            navigate('/')
+        }catch(e: any){
+            setError('Your e-mail or password is invalid! Try again.')
+            throw new Error(e)
+        }
+    };
 
     return (
         <div className="form">
@@ -20,15 +35,15 @@ function SignIn() {
                 onFinish={onFinish}
             >
                 <Form.Item
-                    name="username"
+                    name="email"
                     rules={[
                         {
                             required: true,
-                            message: 'Please input your Username!',
+                            message: 'Please input your E-mail!',
                         },
                     ]}
                 >
-                    <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
+                    <Input prefix={<MailOutlined className="site-form-item-icon" />} type="email" placeholder="E-mail" />
                 </Form.Item>
                 <Form.Item
                     name="password"
@@ -45,6 +60,8 @@ function SignIn() {
                         placeholder="Password"
                     />
                 </Form.Item>
+                {error && <span style={{color: 'red'}}>{error}</span>}
+                <br/>
                 <span>If you dont have an account click
                     <NavLink
                         style={{ color: "blue" }}
