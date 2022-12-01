@@ -43,7 +43,8 @@ function SignUp() {
             await axios.post('http://localhost:3000/user', body)
             navigate('/sign-in')
         }catch(e: any){
-            setError('新しいアカウントを作成できません!再試行。')
+            console.log(e.response.status)
+            setError('このメールはすでに存在しています。')
             throw new Error(e)
         }
     }
@@ -68,7 +69,7 @@ function SignUp() {
                     rules={[
                         {
                             required: true,
-                            message: 'Please input your username!',
+                            message: '名前を入力してください。',
                             whitespace: true,
                         },
                     ]}
@@ -77,15 +78,15 @@ function SignUp() {
                 </Form.Item>
                 <Form.Item
                     name="email"
-                    label="メール"
+                    label="メールアドレス"
                     rules={[
                         {
                             type: 'email',
-                            message: 'The input is not valid E-mail!',
+                            message: '入力は有効な電子メールではありません。',
                         },
                         {
                             required: true,
-                            message: 'Please input your E-mail!',
+                            message: 'メールアドレスを入力してください。',
                         },
                     ]}
                 >
@@ -98,7 +99,7 @@ function SignUp() {
                     rules={[
                         {
                             required: true,
-                            message: 'Please input your password!',
+                            message: 'パスワードを入力してください。',
                         },
                     ]}
                     hasFeedback
@@ -114,14 +115,14 @@ function SignUp() {
                     rules={[
                         {
                             required: true,
-                            message: 'Please confirm your password!',
+                            message: 'パスワードを確認してください。',
                         },
                         ({ getFieldValue }) => ({
                             validator(_, value) {
                                 if (!value || getFieldValue('password') === value) {
                                     return Promise.resolve();
                                 }
-                                return Promise.reject(new Error('The two passwords that you entered do not match!'));
+                                return Promise.reject(new Error('入力した 2 つのパスワードが一致しません。'));
                             },
                         }),
                     ]}
@@ -130,13 +131,13 @@ function SignUp() {
                 </Form.Item>
                 {error && <span style={{color: 'red'}}>{error}</span>}
                 <br />
-                <span>アカウントをお持ち場合は、
+                <span>アカウントをお持ちはこちら
                     <NavLink
                         style={{ color: "blue" }}
                         to="/sign-in"
-                    >ここ
+                    >こちら
                     </NavLink>
-                    をクリックしてください。
+                    。
                 </span>
                 <div>
                     <Button
