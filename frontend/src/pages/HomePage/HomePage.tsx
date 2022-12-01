@@ -22,7 +22,7 @@ const data = [
 function HomePage() {
     return (
         <>
-            <Box sx={{ width: "80%", textAlign: 'center', margin: '30px auto', }}>
+            <Box sx={{ width: "80%", textAlign: 'center', margin: '30px auto' }}>
                 <Search placeholder="検索 ..." enterButton="検索" size="large" />
             </Box>
             <Box sx={{ width: "80%", textAlign: 'center', margin: '30px auto', display: 'flex', justifyContent: 'space-around'}}>

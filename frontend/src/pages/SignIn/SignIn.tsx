@@ -17,7 +17,7 @@ function SignIn() {
             const res = await axios.post('http://localhost:3000/user/login', body)
             localStorage.setItem('token', res.data.data.access_token)
             navigate('/')
-        }catch(e: any){
+        } catch (e: any) {
             setError('メールアドレスまたはパスワードが無効です!再試行。')
             throw new Error(e)
         }
@@ -39,18 +39,22 @@ function SignIn() {
                     rules={[
                         {
                             required: true,
-                            message: 'Please input your E-mail!',
+                            message: 'メールアドレスを入力してください!',
                         },
                     ]}
                 >
-                    <Input prefix={<MailOutlined className="site-form-item-icon" />} type="email" placeholder="メール" />
+                    <Input
+                        prefix={<MailOutlined className="site-form-item-icon" />}
+                        type="email"
+                        placeholder="メールアドレス"
+                    />
                 </Form.Item>
                 <Form.Item
                     name="password"
                     rules={[
                         {
                             required: true,
-                            message: 'Please input your Password!',
+                            message: 'パスワードを入力してください!',
                         },
                     ]}
                 >
@@ -60,16 +64,16 @@ function SignIn() {
                         placeholder="パスワード"
                     />
                 </Form.Item>
-                {error && <span style={{color: 'red'}}>{error}</span>}
-                <br/>
+                {error && <span style={{ color: 'red' }}>{error}</span>}
+                <br />
                 <span>
-                    アカウントをお持ちでない場合は、
+                    アカウントをお持ちでない方はこちら
                     <NavLink
                         style={{ color: "blue" }}
                         to="/sign-up"
-                    >ここ
+                    >こちら
                     </NavLink>
-                    をクリックしてください。
+                    。
                 </span>
                 <div>
                     <Button

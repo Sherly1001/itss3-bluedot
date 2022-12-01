@@ -17,6 +17,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import { red } from '@mui/material/colors';
 
 interface Props {
     /**
@@ -101,7 +102,7 @@ function Header(props: Props) {
     const container = window !== undefined ? () => window().document.body : undefined;
 
     return (
-        <AppBar position="static">
+        <AppBar position="static" color='primary'>
             <Container maxWidth="lg">
                 <Toolbar disableGutters>
                     <IconButton
@@ -178,11 +179,6 @@ function Header(props: Props) {
                             <NavLink to={'/sign-in'}>
                                 <Button sx={{ color: '#fff' }}>
                                     サインイン
-                                </Button>
-                            </NavLink>
-                            <NavLink to={'/sign-up'}>
-                                <Button sx={{ color: '#fff' }}>
-                                    サインアップ
                                 </Button>
                             </NavLink>
                         </Box>
