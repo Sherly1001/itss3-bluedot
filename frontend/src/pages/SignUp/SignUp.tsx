@@ -26,17 +26,24 @@ const formItemLayout = {
     },
 };
 
+interface SignUpInfo{
+    name: string;
+    email: string;
+    password: string;
+    comfirm: string;
+}
+
 function SignUp() {
 
     const [form] = Form.useForm();
     const navigate = useNavigate();
     const [error, setError] = useState<string>('');
 
-    const onFinish = async (values: any) => {
+    const onFinish = async (values: SignUpInfo) => {
         console.log(values);
         try{
             const body = {
-                name: values.username,
+                name: values.name,
                 email: values.email,
                 password: values.password
             }
@@ -64,7 +71,7 @@ function SignUp() {
                 scrollToFirstError
             >
                 <Form.Item
-                    name="username"
+                    name="name"
                     label="名前"
                     rules={[
                         {

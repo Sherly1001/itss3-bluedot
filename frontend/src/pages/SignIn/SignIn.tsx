@@ -3,11 +3,17 @@ import { Button, Form, Input } from 'antd';
 import axios from 'axios';
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import axiosInstance from '../../requests/axiosInstance';
+
+interface SignInInfo{
+    email: string;
+    password: string;
+}
 
 function SignIn() {
     const navigate = useNavigate()
     const [error, setError] = useState<string>('');
-    const onFinish = async (values: any) => {
+    const onFinish = async (values: SignInInfo) => {
         console.log('Received values of form: ', values)
         try {
             const body = {
@@ -16,6 +22,8 @@ function SignIn() {
             }
             const res = await axios.post('http://localhost:3000/user/login', body)
             localStorage.setItem('token', res.data.data.access_token)
+            const res1 = await axiosInstance.get('user')
+            localStorage.setItem('username', res1.data.data.name)
             navigate('/')
         } catch (e: any) {
             setError('メールアドレスまたはパスワードが無効です!再試行。')
