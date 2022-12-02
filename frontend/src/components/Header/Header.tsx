@@ -14,10 +14,8 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import { NavLink, useNavigate } from 'react-router-dom';
-import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import { red } from '@mui/material/colors';
 
 interface Props {
     /**
@@ -153,7 +151,9 @@ function Header(props: Props) {
                                 onClick={handleMenu}
                                 color="inherit"
                             >
-                                <AccountCircle />
+                                <Typography variant="h6">
+                                    {localStorage.getItem('username')}
+                                </Typography>
                             </IconButton>
                             <Menu
                                 id="menu-appbar"
