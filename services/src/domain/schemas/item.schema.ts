@@ -1,5 +1,5 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 import { Shop } from './shop.schema';
 
 export type ItemDocument = HydratedDocument<Item>;
@@ -19,9 +19,15 @@ export class Item {
   @Prop()
   description: string;
 
+  @Prop({
+    type: 'array',
+    items: { type: Types.ObjectId, ref: 'Category' },
+  })
+  categories: Array<Types.ObjectId>;
+
   @Prop(
     raw({
-      shop: { type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Shop' }] },
+      shop: { type: [{ type: Types.ObjectId, ref: 'Shop' }] },
       price: { type: Number },
       rate: { type: Number },
     }),
