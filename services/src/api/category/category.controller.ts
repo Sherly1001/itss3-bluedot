@@ -5,6 +5,7 @@ import {
   Get,
   Post,
   Put,
+  Query,
   Res,
   UseFilters,
   UseGuards,
@@ -13,6 +14,7 @@ import {
   ApiBearerAuth,
   ApiExtraModels,
   ApiOkResponse,
+  ApiQuery,
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
@@ -22,7 +24,11 @@ import { HttpExceptionFilter } from 'src/filters';
 import { AdminGuard } from '../user/admin.auth.guard';
 import { JwtAuthGuard } from '../user/jwt.auth.guard';
 import { CategoryService } from './category.service';
-import { AddCategoriesDto, DeleteCategoriesDto, UpdateCategoryDto } from './dtos';
+import {
+  AddCategoriesDto,
+  DeleteCategoriesDto,
+  UpdateCategoryDto,
+} from './dtos';
 
 @ApiTags('CategoryEndpoint')
 @UseFilters(HttpExceptionFilter)
@@ -31,6 +37,11 @@ import { AddCategoriesDto, DeleteCategoriesDto, UpdateCategoryDto } from './dtos
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
+  @ApiQuery({
+    name: 'search',
+    type: 'string',
+    required: false,
+  })
   @ApiOkResponse({
     schema: {
       $ref: getSchemaPath(BaseResult),
@@ -45,8 +56,8 @@ export class CategoryController {
     },
   })
   @Get()
-  async getCategories(@Res() res) {
-    const result = await this.categoryService.getCategories();
+  async getCategories(@Res() res, @Query('search') search?: string) {
+    const result = await this.categoryService.getCategories(search);
     return res.json(result);
   }
 

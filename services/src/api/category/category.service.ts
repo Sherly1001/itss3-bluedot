@@ -1,6 +1,6 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { BaseResult } from 'src/domain/dtos/base.result';
 import { Category, CategoryDocument } from 'src/domain/schemas/category.schema';
 import {
@@ -16,9 +16,13 @@ export class CategoryService {
     private readonly categoryModel: Model<CategoryDocument>,
   ) {}
 
-  async getCategories() {
+  async getCategories(search?: string) {
     const result = new BaseResult<Category[]>();
-    result.data = await this.categoryModel.find();
+    const filter: FilterQuery<Category> = {};
+    if (search) {
+      filter.name = { $regex: new RegExp(search, 'i') };
+    }
+    result.data = await this.categoryModel.find(filter);
     return result;
   }
 
