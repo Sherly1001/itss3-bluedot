@@ -47,7 +47,7 @@ function SignUp() {
                 email: values.email,
                 password: values.password
             }
-            await axios.post('http://localhost:3000/user', body)
+            await axios.post('https://nourl.ga/bld/api/user', body)
             navigate('/sign-in')
         }catch(e: any){
             console.log(e.response.status)
