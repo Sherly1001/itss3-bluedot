@@ -35,16 +35,20 @@ export class ItemService {
     }
 
     if (categories) {
-      filter.categories = categories;
+      filter.categories = { $in: categories };
     }
 
     if (shops) {
-      filter.prices = {};
+      filter['prices.shop'] = { $in: shops };
     }
 
-    result.data = await this.itemModel
-      .find(filter)
-      .populate(['categories', 'prices.shop']);
+    try {
+      result.data = await this.itemModel
+        .find(filter)
+        .populate(['categories', 'prices.shop']);
+    } catch (err) {
+      throw new UnprocessableEntityException(err.toString());
+    }
 
     return result;
   }
