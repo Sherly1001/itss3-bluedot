@@ -20,23 +20,19 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { BaseResult } from 'src/domain/dtos/base.result';
-import { Category } from 'src/domain/schemas/category.schema';
+import { Shop } from 'src/domain/schemas';
 import { HttpExceptionFilter } from 'src/filters';
 import { AdminGuard } from '../user/admin.auth.guard';
 import { JwtAuthGuard } from '../user/jwt.auth.guard';
-import { CategoryService } from './category.service';
-import {
-  AddCategoriesDto,
-  DeleteCategoriesDto,
-  UpdateCategoryDto,
-} from './dtos';
+import { UpdateShopDto } from './dtos';
+import { ShopService } from './shop.service';
 
-@ApiTags('CategoryEndpoint')
+@ApiTags('ShopEndpoint')
 @UseFilters(HttpExceptionFilter)
-@ApiExtraModels(BaseResult, Category)
-@Controller('category')
-export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+@ApiExtraModels(BaseResult, Shop)
+@Controller('shop')
+export class ShopController {
+  constructor(private readonly shopService: ShopService) {}
 
   @ApiQuery({
     name: 'search',
@@ -50,15 +46,15 @@ export class CategoryController {
         data: {
           type: 'array',
           items: {
-            $ref: getSchemaPath(Category),
+            $ref: getSchemaPath(Shop),
           },
         },
       },
     },
   })
   @Get()
-  async getCategories(@Res() res, @Query('search') search?: string) {
-    const result = await this.categoryService.getCategories(search);
+  async getShops(@Res() res, @Query('search') search?: string) {
+    const result = await this.shopService.getShops(search);
     return res.json(result);
   }
 
@@ -69,17 +65,14 @@ export class CategoryController {
       $ref: getSchemaPath(BaseResult),
       properties: {
         data: {
-          type: 'array',
-          items: {
-            $ref: getSchemaPath(Category),
-          },
+          $ref: getSchemaPath(Shop),
         },
       },
     },
   })
   @Post()
-  async addCategories(@Res() res, @Body() body: AddCategoriesDto) {
-    const result = await this.categoryService.addCategories(body);
+  async addShop(@Res() res, @Body() body: Shop) {
+    const result = await this.shopService.addShop(body);
     return res.json(result);
   }
 
@@ -90,18 +83,18 @@ export class CategoryController {
       $ref: getSchemaPath(BaseResult),
       properties: {
         data: {
-          $ref: getSchemaPath(Category),
+          $ref: getSchemaPath(Shop),
         },
       },
     },
   })
   @Put(':id')
-  async updateCategory(
+  async updateShop(
     @Res() res,
-    @Body() body: UpdateCategoryDto,
+    @Body() body: UpdateShopDto,
     @Param('id') id: string,
   ) {
-    const result = await this.categoryService.updateCategory(id, body);
+    const result = await this.shopService.updateShop(id, body);
     return res.json(result);
   }
 
@@ -112,17 +105,14 @@ export class CategoryController {
       $ref: getSchemaPath(BaseResult),
       properties: {
         data: {
-          type: 'array',
-          items: {
-            $ref: getSchemaPath(Category),
-          },
+          $ref: getSchemaPath(Shop),
         },
       },
     },
   })
-  @Delete()
-  async deleteCategories(@Res() res, @Body() body: DeleteCategoriesDto) {
-    const result = await this.categoryService.deleteCategories(body);
+  @Delete(':id')
+  async deleteShop(@Res() res, @Param('id') id: string) {
+    const result = await this.shopService.deleteShop(id);
     return res.json(result);
   }
 }

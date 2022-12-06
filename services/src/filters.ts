@@ -17,6 +17,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     delete exception.response;
 
     const result = Object.assign(new BaseResult(), {
+      success: false,
       error: {
         ...exception,
         message: Array.isArray(msgs)

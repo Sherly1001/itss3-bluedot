@@ -15,34 +15,24 @@ import {
   ApiBearerAuth,
   ApiExtraModels,
   ApiOkResponse,
-  ApiQuery,
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
 import { BaseResult } from 'src/domain/dtos/base.result';
-import { Category } from 'src/domain/schemas/category.schema';
+import { Item } from 'src/domain/schemas';
 import { HttpExceptionFilter } from 'src/filters';
 import { AdminGuard } from '../user/admin.auth.guard';
 import { JwtAuthGuard } from '../user/jwt.auth.guard';
-import { CategoryService } from './category.service';
-import {
-  AddCategoriesDto,
-  DeleteCategoriesDto,
-  UpdateCategoryDto,
-} from './dtos';
+import { GetItemsDto, UpdateItemDto } from './dtos';
+import { ItemService } from './item.service';
 
-@ApiTags('CategoryEndpoint')
+@ApiTags('ItemEndpoint')
 @UseFilters(HttpExceptionFilter)
-@ApiExtraModels(BaseResult, Category)
-@Controller('category')
-export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+@ApiExtraModels(BaseResult, Item)
+@Controller('item')
+export class ItemController {
+  constructor(private readonly itemService: ItemService) {}
 
-  @ApiQuery({
-    name: 'search',
-    type: 'string',
-    required: false,
-  })
   @ApiOkResponse({
     schema: {
       $ref: getSchemaPath(BaseResult),
@@ -50,15 +40,15 @@ export class CategoryController {
         data: {
           type: 'array',
           items: {
-            $ref: getSchemaPath(Category),
+            $ref: getSchemaPath(Item),
           },
         },
       },
     },
   })
   @Get()
-  async getCategories(@Res() res, @Query('search') search?: string) {
-    const result = await this.categoryService.getCategories(search);
+  async getItems(@Res() res, @Query() query: GetItemsDto) {
+    const result = await this.itemService.getItems(query);
     return res.json(result);
   }
 
@@ -71,37 +61,15 @@ export class CategoryController {
         data: {
           type: 'array',
           items: {
-            $ref: getSchemaPath(Category),
+            $ref: getSchemaPath(Item),
           },
         },
       },
     },
   })
   @Post()
-  async addCategories(@Res() res, @Body() body: AddCategoriesDto) {
-    const result = await this.categoryService.addCategories(body);
-    return res.json(result);
-  }
-
-  @UseGuards(JwtAuthGuard, AdminGuard)
-  @ApiBearerAuth()
-  @ApiOkResponse({
-    schema: {
-      $ref: getSchemaPath(BaseResult),
-      properties: {
-        data: {
-          $ref: getSchemaPath(Category),
-        },
-      },
-    },
-  })
-  @Put(':id')
-  async updateCategory(
-    @Res() res,
-    @Body() body: UpdateCategoryDto,
-    @Param('id') id: string,
-  ) {
-    const result = await this.categoryService.updateCategory(id, body);
+  async addItem(@Res() res, @Body() body: Item) {
+    const result = await this.itemService.addItem(body);
     return res.json(result);
   }
 
@@ -114,15 +82,40 @@ export class CategoryController {
         data: {
           type: 'array',
           items: {
-            $ref: getSchemaPath(Category),
+            $ref: getSchemaPath(Item),
           },
         },
       },
     },
   })
-  @Delete()
-  async deleteCategories(@Res() res, @Body() body: DeleteCategoriesDto) {
-    const result = await this.categoryService.deleteCategories(body);
+  @Put(':id')
+  async updateItem(
+    @Res() res,
+    @Body() body: UpdateItemDto,
+    @Param('id') id: string,
+  ) {
+    const result = await this.itemService.updateItem(id, body);
+    return res.json(result);
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    schema: {
+      $ref: getSchemaPath(BaseResult),
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            $ref: getSchemaPath(Item),
+          },
+        },
+      },
+    },
+  })
+  @Delete(':id')
+  async deleteItem(@Res() res, @Param('id') id: string) {
+    const result = await this.itemService.deleteItem(id);
     return res.json(result);
   }
 }

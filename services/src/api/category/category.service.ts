@@ -45,13 +45,12 @@ export class CategoryService {
     return result;
   }
 
-  async updateCategory(payload: UpdateCategoryDto) {
-    const { id, name } = payload;
+  async updateCategory(id: string, payload: UpdateCategoryDto) {
     const result = new BaseResult<Category>();
     try {
       result.data = await this.categoryModel.findOneAndUpdate(
         { _id: id },
-        { name },
+        payload,
         { new: true },
       );
     } catch (err) {
