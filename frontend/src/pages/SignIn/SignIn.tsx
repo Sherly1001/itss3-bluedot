@@ -20,7 +20,7 @@ function SignIn() {
                 email: values.email,
                 password: values.password
             }
-            const res = await axios.post('http://localhost:3000/user/login', body)
+            const res = await axios.post('https://nourl.ga/bld/api/user/login', body)
             localStorage.setItem('token', res.data.data.access_token)
             const res1 = await axiosInstance.get('user')
             localStorage.setItem('username', res1.data.data.name)
