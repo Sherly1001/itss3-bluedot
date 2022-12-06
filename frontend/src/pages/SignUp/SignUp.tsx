@@ -4,8 +4,8 @@ import {
     Input
 } from 'antd';
 import { NavLink, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { useState } from 'react';
+import axiosInstance from '../../requests/axiosInstance';
 
 const formItemLayout = {
     labelCol: {
@@ -47,7 +47,7 @@ function SignUp() {
                 email: values.email,
                 password: values.password
             }
-            await axios.post('https://nourl.ga/bld/api/user', body)
+            await axiosInstance.post('user', body)
             navigate('/sign-in')
         }catch(e: any){
             console.log(e.response.status)

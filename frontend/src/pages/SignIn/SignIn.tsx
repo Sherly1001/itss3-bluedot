@@ -1,6 +1,5 @@
 import { LockOutlined, MailOutlined } from '@ant-design/icons';
 import { Button, Form, Input } from 'antd';
-import axios from 'axios';
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../requests/axiosInstance';
@@ -20,7 +19,7 @@ function SignIn() {
                 email: values.email,
                 password: values.password
             }
-            const res = await axios.post('https://nourl.ga/bld/api/user/login', body)
+            const res = await axiosInstance.post('user/login', body)
             localStorage.setItem('token', res.data.data.access_token)
             const res1 = await axiosInstance.get('user')
             localStorage.setItem('username', res1.data.data.name)
