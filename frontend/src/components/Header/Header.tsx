@@ -117,7 +117,9 @@ function Header(props: Props) {
                         component="div"
                         sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
                     >
-                        Blue Dot
+                        <NavLink to={'/'} style={{ color: '#fff' }}>
+                            Blue Dot
+                        </NavLink>
                     </Typography>
                     <Box
                         sx={{
