@@ -1,10 +1,46 @@
 import { Box, Container, Typography } from '@mui/material';
 import { Input } from 'antd';
-import { Button, Card, List } from 'antd';
+import { Button, Card, List, Dropdown } from 'antd';
+import * as React from 'react';
+import type { MenuProps } from 'antd';
+import { Link } from 'react-router-dom';
 
 const { Search } = Input;
 const { Meta } = Card;
-
+const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: (
+        <nav>
+            <Link to="/book">電化製品</Link>
+        </nav>
+      ),
+    },
+    {
+      key: '2',
+      label: (
+        <nav>
+            <Link to="/categories">アパレル</Link>
+        </nav>
+      ),
+    },
+    {
+      key: '3',
+      label: (
+        <nav>
+            <Link to="/categories">本</Link>
+        </nav>
+      ),
+    },
+    {
+        key: '4',
+        label: (
+            <nav>
+            <Link to="/categories">スポーツ</Link>
+        </nav>
+        ),
+      },
+  ];
 const data = [
     {
         title: '電化製品',
@@ -31,7 +67,9 @@ function HomePage() {
                 <Search placeholder="検索 ..." enterButton="検索" size="large" />
             </Box>
             <Box sx={{ textAlign: 'center', margin: '30px auto', display: 'flex', justifyContent: 'space-around' }}>
-                <Button type="primary" style={{ width: '120px' }}>メニュー</Button>
+                <Dropdown menu={{ items }} placement="bottomLeft" arrow>
+                    <Button type="primary" style={{ width: '120px' }}>メニュー</Button>
+                </Dropdown>
                 <Button type="primary" style={{ width: '120px' }}>転送サービス</Button>
             </Box>
             <Box sx={{ textAlign: 'center', margin: '30px auto', }}>
