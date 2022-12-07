@@ -26,6 +26,10 @@ export class Item {
   @ApiProperty()
   description: string;
 
+  @Prop()
+  @ApiProperty()
+  imageUrl: string;
+
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Category' }] })
   @ApiProperty()
   categories: Array<Types.ObjectId>;

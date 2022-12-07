@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiExtraModels,
   ApiOkResponse,
   ApiQuery,
@@ -64,6 +65,9 @@ export class CategoryController {
 
   @UseGuards(JwtAuthGuard, AdminGuard)
   @ApiBearerAuth()
+  @ApiBody({
+    type: [Category],
+  })
   @ApiOkResponse({
     schema: {
       $ref: getSchemaPath(BaseResult),
@@ -78,7 +82,7 @@ export class CategoryController {
     },
   })
   @Post()
-  async addCategories(@Res() res, @Body() body: AddCategoriesDto) {
+  async addCategories(@Res() res, @Body() body: Category[]) {
     const result = await this.categoryService.addCategories(body);
     return res.json(result);
   }

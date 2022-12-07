@@ -24,6 +24,10 @@ export class Shop {
 
   @Prop()
   @ApiProperty()
+  imageUrl: string;
+
+  @Prop()
+  @ApiProperty()
   description: string;
 }
 

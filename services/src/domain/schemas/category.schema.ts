@@ -17,6 +17,10 @@ export class Category {
   @Prop({ unique: true })
   @ApiProperty()
   name: string;
+
+  @Prop()
+  @ApiProperty()
+  imageUrl: string;
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);

@@ -26,14 +26,11 @@ export class CategoryService {
     return result;
   }
 
-  async addCategories(payload: AddCategoriesDto) {
+  async addCategories(payload: Category[]) {
     const result = new BaseResult<Category[]>();
-    const docs = payload.names.map((name) =>
-      Object.assign(new Category(), { name }),
-    );
     try {
       const session = await this.categoryModel.startSession();
-      result.data = await this.categoryModel.insertMany(docs, {
+      result.data = await this.categoryModel.insertMany(payload, {
         session,
       });
       await session.commitTransaction();
