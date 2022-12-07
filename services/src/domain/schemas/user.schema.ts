@@ -22,6 +22,10 @@ export class User {
   @ApiProperty()
   email: string;
 
+  @Prop({ unique: true })
+  @ApiProperty()
+  avatarUrl: string;
+
   @Prop()
   hashPassword: string;
 
