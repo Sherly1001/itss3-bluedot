@@ -9,6 +9,7 @@ import SignUp from './pages/SignUp/SignUp';
 import { ThemeProvider } from "@mui/material/styles";
 import { myTheme } from './styles/myTheme';
 import Book from './components/menuList/Book';
+import ProductDetails from './components/ProductDetails';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path='/' element={<HomePage />} index />
             <Route path='/book' element={<Book />} index />
             <Route path='/products' element={<Products />} />
+            <Route path='/products/:id' element={<ProductDetails />} index />
             <Route path='/categories' element={<Categories />} />
             <Route path='/sign-in' element={<SignIn />} />
             <Route path='/sign-up' element={<SignUp />} />
