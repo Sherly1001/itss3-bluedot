@@ -11,6 +11,7 @@ import { myTheme } from './styles/myTheme';
 import Book from './components/menuList/Book';
 import ProductDetails from './components/ProductDetails';
 import { ConstanthPathEnum } from './constanth/constanth.path';
+import Navigation from './components/Navigation/Navigation';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <ThemeProvider theme={myTheme}>
         <div className="App">
           <Header />
+          <Navigation />
           <Routes>
             <Route path={ConstanthPathEnum.HOME_PAGE} element={<HomePage />} index />
             <Route path='/book' element={<Book />} index />
