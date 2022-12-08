@@ -6,6 +6,7 @@ import {
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import axiosInstance from '../../requests/axiosInstance';
+import { ConstanthPathEnum } from '../../constanth/constanth.path';
 
 const formItemLayout = {
     labelCol: {
@@ -141,7 +142,7 @@ function SignUp() {
                 <span>アカウントをお持ちはこちら
                     <NavLink
                         style={{ color: "blue" }}
-                        to="/sign-in"
+                        to={ConstanthPathEnum.SIGN_IN}
                     >こちら
                     </NavLink>
                     。

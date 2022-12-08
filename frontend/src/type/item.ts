@@ -13,5 +13,5 @@ export type Item = {
     description: string,
     categories: Category[],
     prices: Price[],
-    url: string,
+    imageUrl: string,
 }

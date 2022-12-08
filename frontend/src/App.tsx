@@ -10,6 +10,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { myTheme } from './styles/myTheme';
 import Book from './components/menuList/Book';
 import ProductDetails from './components/ProductDetails';
+import { ConstanthPathEnum } from './constanth/constanth.path';
 
 function App() {
   return (
@@ -18,13 +19,13 @@ function App() {
         <div className="App">
           <Header />
           <Routes>
-            <Route path='/' element={<HomePage />} index />
+            <Route path={ConstanthPathEnum.HOME_PAGE} element={<HomePage />} index />
             <Route path='/book' element={<Book />} index />
             <Route path='/products' element={<Products />} />
             <Route path='/products/:id' element={<ProductDetails />} index />
             <Route path='/categories' element={<Categories />} />
-            <Route path='/sign-in' element={<SignIn />} />
-            <Route path='/sign-up' element={<SignUp />} />
+            <Route path={ConstanthPathEnum.SIGN_IN} element={<SignIn />} />
+            <Route path={ConstanthPathEnum.SIGN_UP} element={<SignUp />} />
           </Routes>
         </div>
       </ThemeProvider>
