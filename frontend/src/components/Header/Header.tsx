@@ -16,6 +16,7 @@ import Container from '@mui/material/Container';
 import { NavLink, useNavigate } from 'react-router-dom';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import { ConstanthPathEnum } from '../../constanth/constanth.path';
 
 interface Props {
     /**
@@ -44,7 +45,7 @@ function Header(props: Props) {
     const handleSignOut = () => {
         localStorage.removeItem("token");
         setAnchorEl(null);
-        navigate("/");
+        navigate(ConstanthPathEnum.HOME_PAGE);
     };
 
     const handleDrawerToggle = () => {
@@ -117,7 +118,7 @@ function Header(props: Props) {
                         component="div"
                         sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
                     >
-                        <NavLink to={'/'} style={{ color: '#fff' }}>
+                        <NavLink to={ConstanthPathEnum.HOME_PAGE} style={{ color: '#fff' }}>
                             Blue Dot
                         </NavLink>
                     </Typography>
@@ -127,7 +128,7 @@ function Header(props: Props) {
                             pr: 2
                         }}
                     >
-                        <NavLink to={'/'}>
+                        <NavLink to={ConstanthPathEnum.HOME_PAGE}>
                             <Button sx={{ color: '#fff' }}>
                                 ホーム
                             </Button>
@@ -178,7 +179,7 @@ function Header(props: Props) {
                         </Box>
                     ) : (
                         <Box sx={{ display: { xs: 'none', sm: 'block' }, paddingLeft: 2 }}>
-                            <NavLink to={'/sign-in'}>
+                            <NavLink to={ConstanthPathEnum.SIGN_IN}>
                                 <Button sx={{ color: '#fff' }}>
                                     サインイン
                                 </Button>

@@ -2,6 +2,7 @@ import { LockOutlined, MailOutlined } from '@ant-design/icons';
 import { Button, Form, Input } from 'antd';
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { ConstanthPathEnum } from '../../constanth/constanth.path';
 import axiosInstance from '../../requests/axiosInstance';
 
 interface SignInInfo{
@@ -77,7 +78,7 @@ function SignIn() {
                     アカウントをお持ちでない方はこちら
                     <NavLink
                         style={{ color: "blue" }}
-                        to="/sign-up"
+                        to={ConstanthPathEnum.SIGN_UP}
                     >こちら
                     </NavLink>
                     。
