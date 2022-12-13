@@ -7,7 +7,7 @@ export type Price = {
     shop: Shop,
 }
 
-export type Item = {
+export type Product = {
     id: string,
     name: string,
     description: string,
