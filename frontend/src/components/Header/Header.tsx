@@ -11,6 +11,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { ConstanthPathEnum } from '../../constanth/constanth.path';
 import { Input } from 'antd';
+import { useState } from 'react';
+import { getSearchRoute } from '../../ultis/route';
 const { Search } = Input;
 
 function Header() {
@@ -31,6 +33,18 @@ function Header() {
         navigate(ConstanthPathEnum.HOME_PAGE);
     };
 
+    const [searchInput, setSearchInput] = useState<string>("");
+
+    const handleSearchChange = (e: any) => {
+        setSearchInput(e.target.value);
+    }
+
+    const handleSearch = () => {
+        console.log(searchInput);
+        navigate(getSearchRoute(searchInput));
+        setSearchInput("");
+    }
+
     return (
         <AppBar position="static" color='primary'>
             <Container maxWidth="lg">
@@ -44,7 +58,14 @@ function Header() {
                         </NavLink>
                     </Typography>
                     <Box sx={{ width: "70%" }}>
-                        <Search placeholder="検索 ..." enterButton="検索" size="large" />
+                        <Search
+                            placeholder="検索 ..."
+                            enterButton="検索" size="large"
+                            value={searchInput}
+                            onChange={handleSearchChange}
+                            onPressEnter={handleSearch}
+                            onSearch={handleSearch}
+                        />
                     </Box>
                     {localStorage.getItem('token') ? (
                         <Box>

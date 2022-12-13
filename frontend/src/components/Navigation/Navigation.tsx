@@ -4,13 +4,14 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { ConstanthPathEnum } from "../../constanth/constanth.path";
 import { Category } from "../../type/category";
+import { getCategoyRoute } from "../../ultis/route";
 
 const categories: Category[] = [];
 
 for (var i = 0; i < 20; i++) {
     const cat: Category = {
-        id: `${i}`,
-        name: 'book',
+        id: `book-${i}`,
+        name: `book ${i}`,
         imageUrl: 'http://cpsresources.com/wp-content/uploads/2014/12/appliance-electronics-industry.jpg',
     }
     categories.push(cat);
@@ -33,11 +34,11 @@ function Navigation() {
     return (
         <Box sx={{ backgroundColor: "#e91e63", padding: "10px", width: "100%" }}>
             <Container maxWidth="lg">
-                <Box sx={{ display: "flex", gap: "10%", justifyContent: "flex-start" }}>
+                <Box sx={{ display: "flex", gap: "10%", justifyContent: "flex-start", paddingLeft: "10px" }}>
                     <NavLink to={ConstanthPathEnum.HOME_PAGE}>
                         <Button sx={{ fontSize: "16px", fontWeight: "700" }}>ホーム</Button>
                     </NavLink>
-                    <NavLink to={ConstanthPathEnum.HOME_PAGE}>
+                    <NavLink to={ConstanthPathEnum.PRODUCT_LIST}>
                         <Button sx={{ fontSize: "16px", fontWeight: "700" }}>プロダクト</Button>
                     </NavLink>
                     <Button
@@ -59,11 +60,11 @@ function Navigation() {
                     >
                         <List
                             style={{ width: "500px", paddingTop: "10px" }}
-                            grid={{ gutter: 12, column: 5 }}
+                            grid={{ gutter: 0, column: 5 }}
                             dataSource={categories}
                             renderItem={(item: Category) => (
                                 <List.Item>
-                                    <NavLink to={''} style={{ color: "#333", fontSize: "16px" }} >
+                                    <NavLink to={getCategoyRoute(item.id)} style={{ color: "#333", fontSize: "14px" }} onClick={handleClose}>
                                         {item.name}
                                     </NavLink>
                                 </List.Item>
