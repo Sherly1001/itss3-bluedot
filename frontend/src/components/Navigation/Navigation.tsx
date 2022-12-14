@@ -71,7 +71,7 @@ function Navigation() {
                             )}
                         />
                     </Popover>
-                    <NavLink to={ConstanthPathEnum.HOME_PAGE}>
+                    <NavLink to={ConstanthPathEnum.COMPANY_LIST}>
                         <Button sx={{ fontSize: "16px", fontWeight: "700" }}>詳細なサービス</Button>
                     </NavLink>
                 </Box>
