@@ -11,6 +11,7 @@ import Navigation from './components/Navigation/Navigation';
 import ProductShop from './pages/Products/ProductShop/ProductShop';
 import ProductDetail from './pages/Products/ProductShop/ProductDetail/ProductDetail';
 import Products from './pages/Products/Products';
+import Companies from './pages/Companies/Companies';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <Route path={ConstanthPathEnum.PRODUCT_SEARCH} element={<Products />} />
             <Route path={ConstanthPathEnum.PRODUCT_SHOP} element={<ProductShop />} />
             <Route path={ConstanthPathEnum.PRODUCT_DETAIL} element={<ProductDetail/>} />
+            <Route path={ConstanthPathEnum.COMPANY_LIST} element={<Companies />} />
             {/* <Route path='/products/:id' element={<ProductDetails />} index /> */}
             <Route path={ConstanthPathEnum.SIGN_IN} element={<SignIn />} />
             <Route path={ConstanthPathEnum.SIGN_UP} element={<SignUp />} />
