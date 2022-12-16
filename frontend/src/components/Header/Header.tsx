@@ -60,7 +60,8 @@ function Header() {
                     <Box sx={{ width: "70%" }}>
                         <Search
                             placeholder="検索 ..."
-                            enterButton="検索" size="large"
+                            enterButton="検索" 
+                            size="large"
                             value={searchInput}
                             onChange={handleSearchChange}
                             onPressEnter={handleSearch}
@@ -96,7 +97,6 @@ function Header() {
                                 open={Boolean(anchorEl)}
                                 onClose={handleClose}
                             >
-                                <MenuItem onClick={handleClose}>プロフィール</MenuItem>
                                 <MenuItem onClick={handleSignOut}>サインアウト</MenuItem>
                             </Menu>
                         </Box>
