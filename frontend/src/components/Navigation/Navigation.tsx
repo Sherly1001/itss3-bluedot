@@ -32,7 +32,7 @@ function Navigation() {
     const id = open ? 'simple-popover' : undefined;
 
     return (
-        <Box sx={{ backgroundColor: "#e91e63", padding: "10px", width: "100%" }}>
+        <Box sx={{ backgroundColor: "#e91e63", padding: "10px", width: "100%", position: "sticky", top: "0", zIndex: "9", opacity: "0.7" }}>
             <Container maxWidth="lg">
                 <Box sx={{ display: "flex", gap: "10%", justifyContent: "flex-start", paddingLeft: "10px" }}>
                     <NavLink to={ConstanthPathEnum.HOME_PAGE}>
@@ -57,6 +57,7 @@ function Navigation() {
                             vertical: 'bottom',
                             horizontal: 'left',
                         }}
+                        sx={{ zIndex: "10" }}
                     >
                         <List
                             style={{ width: "500px", paddingTop: "10px" }}

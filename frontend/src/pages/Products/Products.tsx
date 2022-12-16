@@ -63,14 +63,14 @@ function Products() {
         if(params.category_id) setTitle(`カテゴリー：　${params.category_id}`);
         else if(params.search_input) setTitle(`結果：　${params.search_input}`);
         else setTitle("アイテムの一覧表示");
-    }, [params])
+    }, [params]);
 
     const [listProducts, setListProducts] = useState<Product[]>([]);
 
     useEffect(() => {
-        const num = (page - 1) * 12
-        setListProducts(products.slice(num, num + 12))
-    }, [page])
+        const num = (page - 1) * 12;
+        setListProducts(products.slice(num, num + 12));
+    }, [page]);
 
     const handlePageChange = (pageNumber: number) => {
         setPage(pageNumber);
