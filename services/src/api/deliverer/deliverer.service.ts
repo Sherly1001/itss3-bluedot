@@ -2,19 +2,19 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import { BaseResult } from 'src/domain/dtos/base.result';
-import { Deliverier, DeliverierDocument } from 'src/domain/schemas';
+import { Deliverer, DelivererDocument } from 'src/domain/schemas';
 import { UpdateDeliveryDto } from './dtos';
 
 @Injectable()
-export class DeliverierService {
+export class DelivererService {
   constructor(
-    @InjectModel(Deliverier.name)
-    private readonly deliverierModel: Model<DeliverierDocument>,
+    @InjectModel(Deliverer.name)
+    private readonly delivererModel: Model<DelivererDocument>,
   ) {}
 
   async getAll(search: string) {
-    const result = new BaseResult<Deliverier[]>();
-    const filter: FilterQuery<DeliverierDocument> = {};
+    const result = new BaseResult<Deliverer[]>();
+    const filter: FilterQuery<DelivererDocument> = {};
 
     if (search) {
       filter.name = {
@@ -22,16 +22,16 @@ export class DeliverierService {
       };
     }
 
-    result.data = await this.deliverierModel.find(filter);
+    result.data = await this.delivererModel.find(filter);
 
     return result;
   }
 
-  async create(payload: Deliverier) {
-    const result = new BaseResult<Deliverier>();
+  async create(payload: Deliverer) {
+    const result = new BaseResult<Deliverer>();
 
     try {
-      result.data = await this.deliverierModel.create(payload);
+      result.data = await this.delivererModel.create(payload);
     } catch (err) {
       if (err.toString().includes('name_1 dup key')) {
         throw new UnprocessableEntityException(err.toString());
@@ -42,10 +42,10 @@ export class DeliverierService {
   }
 
   async update(id: string, payload: UpdateDeliveryDto) {
-    const result = new BaseResult<Deliverier>();
+    const result = new BaseResult<Deliverer>();
 
     try {
-      result.data = await this.deliverierModel.findOneAndUpdate(
+      result.data = await this.delivererModel.findOneAndUpdate(
         { _id: id },
         payload,
         {
@@ -62,10 +62,10 @@ export class DeliverierService {
   }
 
   async delete(id: string) {
-    const result = new BaseResult<Deliverier>();
+    const result = new BaseResult<Deliverer>();
 
     try {
-      result.data = await this.deliverierModel.findOneAndDelete({ _id: id });
+      result.data = await this.delivererModel.findOneAndDelete({ _id: id });
     } catch (err) {
       throw new UnprocessableEntityException(err.toString());
     }

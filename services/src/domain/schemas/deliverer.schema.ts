@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { HydratedDocument } from 'mongoose';
 
-export type DeliverierDocument = HydratedDocument<Deliverier>;
+export type DelivererDocument = HydratedDocument<Deliverer>;
 
 @Schema({
   toJSON: {
@@ -13,7 +13,7 @@ export type DeliverierDocument = HydratedDocument<Deliverier>;
     },
   },
 })
-export class Deliverier {
+export class Deliverer {
   @Prop({ unique: true })
   @ApiProperty()
   name: string;
@@ -23,4 +23,4 @@ export class Deliverier {
   imageUrl: string;
 }
 
-export const DeliverierSchema = SchemaFactory.createForClass(Deliverier);
+export const DelivererSchema = SchemaFactory.createForClass(Deliverer);
