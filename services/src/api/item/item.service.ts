@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import { BaseResult } from 'src/domain/dtos/base.result';
 import { Item, ItemDocument } from 'src/domain/schemas';
+import { CommentService } from '../comment/comment.service';
 import { GetItemsDto, UpdateItemDto } from './dtos';
 
 @Injectable()
@@ -10,6 +11,7 @@ export class ItemService {
   constructor(
     @InjectModel(Item.name)
     private readonly itemModel: Model<ItemDocument>,
+    private readonly commentService: CommentService,
   ) {}
 
   async getItems(query: GetItemsDto) {
@@ -38,9 +40,21 @@ export class ItemService {
     }
 
     try {
-      result.data = await this.itemModel
+      const items: any[] = await this.itemModel
         .find(filter)
         .populate(['categories', 'prices.shop']);
+
+      for (let i = 0; i < items.length; ++i) {
+        for (let j = 0; j < items[i].prices.length; ++j) {
+          const rate = await this.commentService.getRating(
+            items[i]._id.toString(),
+            items[i].prices[j].shop?._id?.toString(),
+          );
+          items[i].prices[i].rate = rate;
+        }
+      }
+
+      result.data = items;
     } catch (err) {
       throw new UnprocessableEntityException(err.toString());
     }

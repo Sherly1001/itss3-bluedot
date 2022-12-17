@@ -27,9 +27,8 @@ export class CommentService {
     const result = new BaseResult<Comment[]>();
     const filter: FilterQuery<CommentDocument> = {};
 
-    filter.item = itemId;
-
     if (await this.shopModel.findOne({ _id: targetId })) {
+      filter.item = itemId;
       filter.shop = targetId;
     } else {
       filter.deliverer = targetId;
@@ -117,5 +116,21 @@ export class CommentService {
     }
 
     return result;
+  }
+
+  async getRating(itemId: string, targetId: string) {
+    const filter: FilterQuery<CommentDocument> = {};
+
+    if (await this.shopModel.findOne({ _id: targetId })) {
+      filter.item = itemId;
+      filter.shop = targetId;
+    } else {
+      filter.deliverer = targetId;
+    }
+
+    const cmts = await this.commentModel.find(filter);
+    return cmts.length > 0
+      ? cmts.reduce((acc, c) => acc + c.rate, 0) / cmts.length
+      : 5;
   }
 }

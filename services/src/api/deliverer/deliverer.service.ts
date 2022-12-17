@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import { BaseResult } from 'src/domain/dtos/base.result';
 import { Deliverer, DelivererDocument } from 'src/domain/schemas';
+import { CommentService } from '../comment/comment.service';
 import { UpdateDeliveryDto } from './dtos';
 
 @Injectable()
@@ -10,6 +11,7 @@ export class DelivererService {
   constructor(
     @InjectModel(Deliverer.name)
     private readonly delivererModel: Model<DelivererDocument>,
+    private readonly commentService: CommentService,
   ) {}
 
   async getAll(search: string) {
@@ -22,7 +24,17 @@ export class DelivererService {
       };
     }
 
-    result.data = await this.delivererModel.find(filter);
+    const data = await this.delivererModel.find(filter);
+    for (let i = 0; i < data.length; ++i) {
+      const rate = await this.commentService.getRating(
+        null,
+        data[i]?._id?.toString(),
+      );
+
+      data[i].rate = rate;
+    }
+
+    result.data = data;
 
     return result;
   }

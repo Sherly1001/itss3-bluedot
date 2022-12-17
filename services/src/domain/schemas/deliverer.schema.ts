@@ -21,6 +21,9 @@ export class Deliverer {
   @Prop()
   @ApiProperty()
   imageUrl: string;
+
+  @Prop({ required: false, default: 5 })
+  rate: number;
 }
 
 export const DelivererSchema = SchemaFactory.createForClass(Deliverer);

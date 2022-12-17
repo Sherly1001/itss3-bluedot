@@ -14,12 +14,12 @@ export class Comment {
   @ApiProperty({ default: 5 })
   rate: number;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'Item', required: true })
-  @ApiProperty()
-  item: string;
-
   @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
   user: string;
+
+  @Prop({ type: SchemaTypes.ObjectId, ref: 'Item', required: false })
+  @ApiProperty({ required: false, default: null })
+  item: string;
 
   @Prop({
     type: SchemaTypes.ObjectId,
