@@ -20,10 +20,6 @@ export class Shop {
 
   @Prop()
   @ApiProperty()
-  videoLink: string;
-
-  @Prop()
-  @ApiProperty()
   imageUrl: string;
 
   @Prop()

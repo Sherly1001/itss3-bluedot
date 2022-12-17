@@ -22,7 +22,7 @@ export class User {
   @ApiProperty()
   email: string;
 
-  @Prop({ unique: true })
+  @Prop()
   @ApiProperty()
   avatarUrl: string;
 
