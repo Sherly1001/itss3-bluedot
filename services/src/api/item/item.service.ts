@@ -2,8 +2,7 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import { BaseResult } from 'src/domain/dtos/base.result';
-import { Item, ItemDocument, Shop, ShopDocument } from 'src/domain/schemas';
-import { Category, CategoryDocument } from 'src/domain/schemas/category.schema';
+import { Item, ItemDocument } from 'src/domain/schemas';
 import { GetItemsDto, UpdateItemDto } from './dtos';
 
 @Injectable()
@@ -11,10 +10,6 @@ export class ItemService {
   constructor(
     @InjectModel(Item.name)
     private readonly itemModel: Model<ItemDocument>,
-    @InjectModel(Shop.name)
-    private readonly shopModel: Model<ShopDocument>,
-    @InjectModel(Category.name)
-    private readonly categoryModel: Model<CategoryDocument>,
   ) {}
 
   async getItems(query: GetItemsDto) {
