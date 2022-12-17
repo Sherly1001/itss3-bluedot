@@ -39,7 +39,7 @@ export class Item {
       {
         shop: { type: Types.ObjectId, ref: 'Shop' },
         price: { type: 'number' },
-        rate: { type: 'number' },
+        rate: { type: 'number', default: 5 },
       },
     ],
   })
@@ -49,7 +49,6 @@ export class Item {
       properties: {
         shop: { type: 'string' },
         price: { type: 'number' },
-        rate: { type: 'number' },
       },
     },
   })
