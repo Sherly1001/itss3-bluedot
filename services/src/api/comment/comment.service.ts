@@ -27,16 +27,20 @@ export class CommentService {
     const result = new BaseResult<Comment[]>();
     const filter: FilterQuery<CommentDocument> = {};
 
-    if (await this.shopModel.findOne({ _id: targetId })) {
-      filter.item = itemId;
-      filter.shop = targetId;
-    } else {
-      filter.deliverer = targetId;
-    }
+    try {
+      if (await this.shopModel.findOne({ _id: targetId })) {
+        filter.item = itemId;
+        filter.shop = targetId;
+      } else {
+        filter.deliverer = targetId;
+      }
 
-    result.data = await this.commentModel
-      .find(filter)
-      .populate(['user', 'shop', 'deliverer']);
+      result.data = await this.commentModel
+        .find(filter)
+        .populate(['user', 'shop', 'deliverer']);
+    } catch (err) {
+      throw new UnprocessableEntityException(err.toString());
+    }
 
     return result;
   }
@@ -121,16 +125,20 @@ export class CommentService {
   async getRating(itemId: string, targetId: string) {
     const filter: FilterQuery<CommentDocument> = {};
 
-    if (await this.shopModel.findOne({ _id: targetId })) {
-      filter.item = itemId;
-      filter.shop = targetId;
-    } else {
-      filter.deliverer = targetId;
-    }
+    try {
+      if (await this.shopModel.findOne({ _id: targetId })) {
+        filter.item = itemId;
+        filter.shop = targetId;
+      } else {
+        filter.deliverer = targetId;
+      }
 
-    const cmts = await this.commentModel.find(filter);
-    return cmts.length > 0
-      ? cmts.reduce((acc, c) => acc + c.rate, 0) / cmts.length
-      : 5;
+      const cmts = await this.commentModel.find(filter);
+      return cmts.length > 0
+        ? cmts.reduce((acc, c) => acc + c.rate, 0) / cmts.length
+        : 5;
+    } catch {
+      return 5;
+    }
   }
 }
