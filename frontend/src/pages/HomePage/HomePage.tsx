@@ -1,56 +1,27 @@
 import { Box, Container, Typography } from '@mui/material';
 import { Card, List } from 'antd';
+import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import axiosInstance from '../../requests/axiosInstance';
 import { Category } from '../../type/category';
-import { Price, Product } from '../../type/product';
-import { Shop } from '../../type/shop';
+import { Product } from '../../type/product';
 import { getCategoyRoute, getProductShopRoute } from '../../ultis/route';
 
 const { Meta } = Card;
 
-const category1: Category[] = [];
-
-for (var i = 0; i < 8; i++) {
-    const cat: Category = {
-        id: `category-${i}`,
-        name: `Category ${i}`,
-        imageUrl: 'https://dictionary.cambridge.org/vi/images/thumb/book_noun_001_01679.jpg',
-    }
-    category1.push(cat);
-}
-
-const price1: Price[] = [];
-
-for (var i = 0; i < 5; i++) {
-    const newShop: Shop = {
-        id: `shop-{i}`,
-        name: `Shop ${i}`,
-        description: 'This is best shop',
-        imageUrl: 'https://deo.shopeemobile.com/shopee/shopee-mobilemall-live-sg/homepage/26c9324913c021677768c36975d635ef.png',
-    }
-    const newPrice: Price = {
-        price: (i + 1) * 1000,
-        rate: 4.5,
-        shop: newShop,
-    }
-    price1.push(newPrice);
-}
-
-const products: Product[] = []
-
-for (var i = 0; i < 12; i++) {
-    const item: Product = {
-        id: `product-${i}`,
-        name: 'Iphone 14',
-        description: 'Product made by Apple',
-        prices: price1,
-        categories: category1,
-        imageUrl: 'https://cdn.tgdd.vn/Products/Images/42/289696/iphone-14-pro-tim-thumb-600x600.jpg',
-    }
-    products.push(item);
-}
-
 function HomePage() {
+
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
+
+    useEffect(() => {
+        axiosInstance.get('category')
+            .then(res => setCategories(res.data.data.slice(0, 8)));
+        
+        axiosInstance.get('item')
+            .then(res => setProducts(res.data.data.slice(0, 9)));
+    }, []);
+
     return (
         <Container maxWidth="lg">
             <Box sx={{ textAlign: 'center', margin: '30px auto', }}>
@@ -62,14 +33,14 @@ function HomePage() {
                     カテゴリー
                 </Typography>
                 <Card>
-                    {category1.map(cat => (
+                    {categories.map(cat => (
                         <Card.Grid
                             key={cat.id}
                             style={{
                                 width: '25%',
                                 textAlign: 'center',
                             }}>
-                            <NavLink to={getCategoyRoute(cat.id)} style={{ color: "#333" }}>
+                            <NavLink to={getCategoyRoute(cat.name)} style={{ color: "#333" }}>
                                 <Box style={{ display:"flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
                                     <img src={cat.imageUrl} style={{ height: "70px", width: "70px" }} />
                                     {cat.name}
@@ -88,17 +59,17 @@ function HomePage() {
                     アイテム
                 </Typography>
                 <List
-                    grid={{ gutter: 12, column: 4 }}
+                    grid={{ column: 3 }}
                     dataSource={products}
                     renderItem={(item: Product) => (
-                        <List.Item>
+                        <List.Item style={{ padding: "10px" }}>
                             <NavLink to={getProductShopRoute(item.id)}>
                                 <Card
                                     hoverable
                                     style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
                                     cover={<img alt='electronics image' src={item.imageUrl} style={{ height: '150px', width: '150px', padding: '15px' }} />}
                                 >
-                                    <Meta title={item.name} />
+                                    <Meta description={item.name} />
                                 </Card>
                             </NavLink>
                         </List.Item>
