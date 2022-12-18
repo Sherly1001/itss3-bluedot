@@ -5,23 +5,32 @@ import { Shop } from "../../type/shop";
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { Pagination } from 'antd';
 
 function AdminShops() {
+    const [totals, setTotals] = useState<Shop[]>([]);
     const [listShops, setListShops] = useState<Shop[]>([]);
+    const [page, setPage] = useState<number>(1);
     // Add new shop
     const [open, setOpen] = useState<boolean>(false);
     const [name, setName] = useState<string>("");
     const [description, setDescription] = useState<string>("");
-    const [video, setVideo] = useState<string>("");
     const [image, setImage] = useState<string>("");
     // Edit
     const [selected, setSelected] = useState<string>("");
 
     useEffect(() => {
-        axiosInstance.get("shop")
-            .then(res => setListShops(res.data.data));
-        console.log("re-render");
-    }, []);
+        axiosInstance.get('shop')
+            .then(res => {
+                setTotals(res.data.data);
+                if (page === 1) setListShops(res.data.data.slice(0, 5));
+            })
+    }, [open, selected]);
+
+    useEffect(() => {
+        const num = (page - 1) * 5;
+        setListShops(totals.slice(num, num + 5));
+    }, [page, totals]);
 
     const handleOpen = () => {
         setOpen(true)
@@ -30,7 +39,6 @@ function AdminShops() {
         setName("");
         setDescription("");
         setImage("");
-        setVideo("");
         setOpen(false);
         setSelected("");
     };
@@ -39,13 +47,12 @@ function AdminShops() {
             name: name,
             description: description,
             imageUrl: image,
-            videoLink: video,
         }
-        axiosInstance.post("shop", newShop);
+        axiosInstance.post("shop", newShop)
+            .then(res => setTotals([...totals, res.data.data]));
         setName("");
         setDescription("");
         setImage("");
-        setVideo("");
         setOpen(false);
     }
 
@@ -62,19 +69,26 @@ function AdminShops() {
             name: name,
             description: description,
             imageUrl: image,
-            videoLink: video,
         }
-        axiosInstance.put(`shop/${selected}`, newShop);
+        axiosInstance.put(`shop/${selected}`, newShop)
+            .then(res => setTotals(totals.map(item => {
+                if(item.id === res.data.data.id) item = {...res.data.data}
+                return item;
+            })));
         setName("");
         setDescription("");
         setImage("");
-        setVideo("");
         setSelected("");
     }
 
     const handleDelete = (id: string) => {
         axiosInstance.delete(`shop/${id}`);
+        setTotals(totals.filter(item => item.id !== id));
     }
+
+    const handleChange = (p: number) => {
+        setPage(p);
+    };
 
     return (
         <Box sx={{ padding: "50px" }}>
@@ -118,14 +132,6 @@ function AdminShops() {
                                 variant="standard"
                                 margin="dense"
                                 onChange={e => setDescription(e.target.value)}
-                            />
-                            <TextField
-                                value={video}
-                                label="ビデオロンク"
-                                fullWidth
-                                variant="standard"
-                                margin="dense"
-                                onChange={e => setVideo(e.target.value)}
                             />
                             <TextField
                                 value={image}
@@ -204,6 +210,15 @@ function AdminShops() {
                         </Box>
                     ))}
                 </Box>
+                <Box sx={{ display: "flex", justifyContent: "center", margin: "50px 0" }}>
+                    <Pagination
+                        total={totals.length}
+                        pageSize={5}
+                        defaultCurrent={page}
+                        onChange={handleChange}
+                        showSizeChanger={false}
+                    />
+                </Box>
                 <Dialog
                     fullWidth
                     maxWidth="sm"
@@ -227,14 +242,6 @@ function AdminShops() {
                             variant="standard"
                             margin="dense"
                             onChange={e => setDescription(e.target.value)}
-                        />
-                        <TextField
-                            value={video}
-                            label="ビデオロンク"
-                            fullWidth
-                            variant="standard"
-                            margin="dense"
-                            onChange={e => setVideo(e.target.value)}
                         />
                         <TextField
                             value={image}
