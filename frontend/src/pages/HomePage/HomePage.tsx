@@ -4,17 +4,17 @@ import { NavLink } from 'react-router-dom';
 import { Category } from '../../type/category';
 import { Price, Product } from '../../type/product';
 import { Shop } from '../../type/shop';
-import { getProductShopRoute } from '../../ultis/route';
+import { getCategoyRoute, getProductShopRoute } from '../../ultis/route';
 
 const { Meta } = Card;
 
 const category1: Category[] = [];
 
-for (var i = 0; i < 3; i++) {
+for (var i = 0; i < 8; i++) {
     const cat: Category = {
         id: `category-${i}`,
         name: `Category ${i}`,
-        imageUrl: 'http://cpsresources.com/wp-content/uploads/2014/12/appliance-electronics-industry.jpg',
+        imageUrl: 'https://dictionary.cambridge.org/vi/images/thumb/book_noun_001_01679.jpg',
     }
     category1.push(cat);
 }
@@ -38,7 +38,7 @@ for (var i = 0; i < 5; i++) {
 
 const products: Product[] = []
 
-for (var i = 0; i < 20; i++) {
+for (var i = 0; i < 12; i++) {
     const item: Product = {
         id: `product-${i}`,
         name: 'Iphone 14',
@@ -59,7 +59,33 @@ function HomePage() {
                     component="div"
                     sx={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '30px' }}
                 >
-                    アイテムの一覧表示
+                    カテゴリー
+                </Typography>
+                <Card>
+                    {category1.map(cat => (
+                        <Card.Grid
+                            key={cat.id}
+                            style={{
+                                width: '25%',
+                                textAlign: 'center',
+                            }}>
+                            <NavLink to={getCategoyRoute(cat.id)} style={{ color: "#333" }}>
+                                <Box style={{ display:"flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+                                    <img src={cat.imageUrl} style={{ height: "70px", width: "70px" }} />
+                                    {cat.name}
+                                </Box>
+                            </NavLink>
+                        </Card.Grid>
+                    ))}
+                </Card>
+            </Box>
+            <Box sx={{ textAlign: 'center', margin: '30px auto', }}>
+                <Typography
+                    variant="h5"
+                    component="div"
+                    sx={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '30px' }}
+                >
+                    アイテム
                 </Typography>
                 <List
                     grid={{ gutter: 12, column: 4 }}

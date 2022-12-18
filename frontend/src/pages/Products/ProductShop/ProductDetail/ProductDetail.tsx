@@ -8,6 +8,7 @@ import { Avatar, Input, List, Pagination } from 'antd';
 import { useEffect, useState } from "react";
 import { User } from "../../../../type/user";
 import useCommentsStore from "../../../../store/commentsStore";
+import axiosInstance from "../../../../requests/axiosInstance";
 
 const { TextArea } = Input;
 
@@ -68,9 +69,15 @@ function ProductDetail() {
         setErrorMessage("");
     };
 
+    useEffect(() => {
+        console.log(params)
+        axiosInstance.get(`comment/${params.product_id}/${params.shop_id}`)
+            .then(res => console.log(res.data.data))
+    }, [])
+
     const handleSubmit = () => {
         if (comment && rate !== 0) {
-            console.log({comment, rate});
+            console.log({ comment, rate });
             const us: User = {
                 name: localStorage.getItem('username') || 'user',
                 email: 'abc',
@@ -82,7 +89,7 @@ function ProductDetail() {
                 rate: rate || 5,
                 user: us
             }
-            if(store.comments.find(cmt => cmt.user.name === localStorage.getItem('username')))
+            if (store.comments.find(cmt => cmt.user.name === localStorage.getItem('username')))
                 store.uppdateComment(newCmt, us);
             else store.addCommnet(newCmt);
             setComment("");

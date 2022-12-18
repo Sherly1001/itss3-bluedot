@@ -7,16 +7,16 @@ import SignUp from './pages/SignUp/SignUp';
 import { ThemeProvider } from "@mui/material/styles";
 import { myTheme } from './styles/myTheme';
 import { ConstanthPathEnum } from './constanth/constanth.path';
-import Navigation from './components/Navigation/Navigation';
 import ProductShop from './pages/Products/ProductShop/ProductShop';
 import ProductDetail from './pages/Products/ProductShop/ProductDetail/ProductDetail';
 import Products from './pages/Products/Products';
 import Companies from './pages/Companies/Companies';
-import Admin from './pages/Admin/Admin';
 import AdminCategories from './pages/Admin/AdminCategories';
 import AdminCompanies from './pages/Admin/AdminComapnies';
 import AdminProducts from './pages/Admin/AdminProducts';
 import AdminShops from './pages/Admin/AdminShops';
+import PrivateRoutes from './pages/PrivateRoutes/PrivateRoutes';
+import Footer from './components/Footer/Footer';
 
 function App() {
   return (
@@ -24,7 +24,6 @@ function App() {
       <ThemeProvider theme={myTheme}>
         <div className="App">
           <Header />
-          <Navigation />
           <Routes>
             <Route path={ConstanthPathEnum.HOME_PAGE} element={<HomePage />} index />
             <Route path={ConstanthPathEnum.PRODUCT_LIST} element={<Products />} />
@@ -35,12 +34,14 @@ function App() {
             <Route path={ConstanthPathEnum.COMPANY_LIST} element={<Companies />} />
             <Route path={ConstanthPathEnum.SIGN_IN} element={<SignIn />} />
             <Route path={ConstanthPathEnum.SIGN_UP} element={<SignUp />} />
-            <Route path={ConstanthPathEnum.ADMIN} element={<Admin />} />
-            <Route path={ConstanthPathEnum.ADMIN_PRODUCT} element={<AdminProducts />} />
-            <Route path={ConstanthPathEnum.ADMIN_SHOP} element={<AdminShops />} />
-            <Route path={ConstanthPathEnum.ADMIN_CATEGORY} element={<AdminCategories />} />
-            <Route path={ConstanthPathEnum.ADMIN_COMPANY} element={<AdminCompanies />} />
+            <Route element={<PrivateRoutes />}>
+              <Route path={ConstanthPathEnum.ADMIN_PRODUCT} element={<AdminProducts />} />
+              <Route path={ConstanthPathEnum.ADMIN_SHOP} element={<AdminShops />} />
+              <Route path={ConstanthPathEnum.ADMIN_CATEGORY} element={<AdminCategories />} />
+              <Route path={ConstanthPathEnum.ADMIN_COMPANY} element={<AdminCompanies />} />
+            </Route>
           </Routes>
+          <Footer />
         </div>
       </ThemeProvider>
     </BrowserRouter>
