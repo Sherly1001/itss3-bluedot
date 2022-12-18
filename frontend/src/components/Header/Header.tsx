@@ -13,6 +13,7 @@ import { ConstanthPathEnum } from '../../constanth/constanth.path';
 import { Input } from 'antd';
 import { useState } from 'react';
 import { getSearchRoute } from '../../ultis/route';
+import Navigation from '../Navigation/Navigation';
 const { Search } = Input;
 
 function Header() {
@@ -48,70 +49,73 @@ function Header() {
     }
 
     return (
-        <AppBar position="static" color='primary'>
-            <Container maxWidth="lg">
-                <Toolbar disableGutters sx={{ padding: "0 10px", justifyContent: "space-between" }}>
-                    <Typography
-                        variant="h6"
-                        component="div"
-                    >
-                        <NavLink to={ConstanthPathEnum.HOME_PAGE} style={{ color: '#e91e63', fontSize: '20px', fontWeight: '700' }}>
-                            Blue Dot
-                        </NavLink>
-                    </Typography>
-                    <Box sx={{ width: "70%" }}>
-                        <Search
-                            placeholder="検索 ..."
-                            enterButton="検索" 
-                            size="large"
-                            value={searchInput}
-                            onChange={handleSearchChange}
-                            onPressEnter={handleSearch}
-                            onSearch={handleSearch}
-                        />
-                    </Box>
-                    {localStorage.getItem('token') ? (
-                        <Box>
-                            <IconButton
+        <>
+            <AppBar position="static" color='primary'>
+                <Container maxWidth="lg">
+                    <Toolbar disableGutters sx={{ padding: "0 10px", justifyContent: "space-between" }}>
+                        <Typography
+                            variant="h6"
+                            component="div"
+                        >
+                            <NavLink to={ConstanthPathEnum.HOME_PAGE} style={{ color: '#e91e63', fontSize: '20px', fontWeight: '700' }}>
+                                Blue Dot
+                            </NavLink>
+                        </Typography>
+                        <Box sx={{ width: "70%" }}>
+                            <Search
+                                placeholder="検索 ..."
+                                enterButton="検索"
                                 size="large"
-                                aria-label="account of current user"
-                                aria-controls="menu-appbar"
-                                aria-haspopup="true"
-                                onClick={handleMenu}
-                                color="inherit"
-                            >
-                                <Typography variant="h6" sx={{ color: '#e91e63', fontSize: '20px', fontWeight: '700' }}>
-                                    {localStorage.getItem('username')}
-                                </Typography>
-                            </IconButton>
-                            <Menu
-                                id="menu-appbar"
-                                anchorEl={anchorEl}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'right',
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                open={Boolean(anchorEl)}
-                                onClose={handleClose}
-                            >
-                                <MenuItem onClick={handleSignOut}>サインアウト</MenuItem>
-                            </Menu>
+                                value={searchInput}
+                                onChange={handleSearchChange}
+                                onPressEnter={handleSearch}
+                                onSearch={handleSearch}
+                            />
                         </Box>
-                    ) : (
-                        <NavLink to={ConstanthPathEnum.SIGN_IN}>
-                            <Button sx={{ color: '#e91e63', fontSize: '20px', fontWeight: '700' }}>
-                                サインイン
-                            </Button>
-                        </NavLink>
-                    )}
-                </Toolbar>
-            </Container>
-        </AppBar >
+                        {localStorage.getItem('token') ? (
+                            <Box>
+                                <IconButton
+                                    size="large"
+                                    aria-label="account of current user"
+                                    aria-controls="menu-appbar"
+                                    aria-haspopup="true"
+                                    onClick={handleMenu}
+                                    color="inherit"
+                                >
+                                    <Typography variant="h6" sx={{ color: '#e91e63', fontSize: '20px', fontWeight: '700' }}>
+                                        {localStorage.getItem('username')}
+                                    </Typography>
+                                </IconButton>
+                                <Menu
+                                    id="menu-appbar"
+                                    anchorEl={anchorEl}
+                                    anchorOrigin={{
+                                        vertical: 'bottom',
+                                        horizontal: 'right',
+                                    }}
+                                    keepMounted
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleClose}
+                                >
+                                    <MenuItem onClick={handleSignOut}>サインアウト</MenuItem>
+                                </Menu>
+                            </Box>
+                        ) : (
+                            <NavLink to={ConstanthPathEnum.SIGN_IN}>
+                                <Button sx={{ color: '#e91e63', fontSize: '20px', fontWeight: '700' }}>
+                                    サインイン
+                                </Button>
+                            </NavLink>
+                        )}
+                    </Toolbar>
+                </Container>
+            </AppBar >
+            <Navigation />
+        </>
     );
 };
 

@@ -12,7 +12,7 @@ for (var i = 0; i < 20; i++) {
     const cat: Category = {
         id: `book-${i}`,
         name: `book ${i}`,
-        imageUrl: 'http://cpsresources.com/wp-content/uploads/2014/12/appliance-electronics-industry.jpg',
+        imageUrl: 'https://dictionary.cambridge.org/vi/images/thumb/book_noun_001_01679.jpg',
     }
     categories.push(cat);
 }

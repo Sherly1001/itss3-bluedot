@@ -3,5 +3,4 @@ export type Shop = {
     id: string;
     name: string;
     imageUrl: string;
-    videoLink: string;
 }
