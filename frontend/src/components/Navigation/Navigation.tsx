@@ -1,25 +1,32 @@
 import { Box, Button, Container, Menu, MenuItem, Popover } from "@mui/material";
 import { List } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { ConstanthPathEnum } from "../../constanth/constanth.path";
+import axiosInstance from "../../requests/axiosInstance";
 import { Category } from "../../type/category";
 import { getCategoyRoute } from "../../ultis/route";
 
-const categories: Category[] = [];
+// const categories: Category[] = [];
 
-for (var i = 0; i < 20; i++) {
-    const cat: Category = {
-        id: `book-${i}`,
-        name: `book ${i}`,
-        imageUrl: 'https://dictionary.cambridge.org/vi/images/thumb/book_noun_001_01679.jpg',
-    }
-    categories.push(cat);
-}
+// for (var i = 0; i < 20; i++) {
+//     const cat: Category = {
+//         id: `book-${i}`,
+//         name: `book ${i}`,
+//         imageUrl: 'https://dictionary.cambridge.org/vi/images/thumb/book_noun_001_01679.jpg',
+//     }
+//     categories.push(cat);
+// }
 
 function Navigation() {
+    const [categories, setCategories] = useState<Category[]>([]);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [adminEl, setAdminEl] = useState<null | HTMLElement>(null);
+
+    useEffect(() => {
+        axiosInstance.get('category')
+        .then(res => setCategories(res.data.data));
+    }, []);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -69,12 +76,13 @@ function Navigation() {
                         sx={{ zIndex: "10" }}
                     >
                         <List
-                            style={{ width: "500px", paddingTop: "10px" }}
-                            grid={{ gutter: 0, column: 5 }}
+                            style={{ width: "700px", padding: "10px 0 0 20px" }}
+                            grid={{ column: 4 }}
                             dataSource={categories}
+                            size="large"
                             renderItem={(item: Category) => (
-                                <List.Item>
-                                    <NavLink to={getCategoyRoute(item.id)} style={{ color: "#333", fontSize: "14px" }} onClick={handleClose}>
+                                <List.Item style={{ padding: "0 10px", width: "150px" }}>
+                                    <NavLink to={getCategoyRoute(item.name)} style={{ color: "#333", fontSize: "14px" }} onClick={handleClose}>
                                         {item.name}
                                     </NavLink>
                                 </List.Item>

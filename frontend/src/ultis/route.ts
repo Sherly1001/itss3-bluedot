@@ -9,7 +9,7 @@ export const getProductShopRoute = (productId: string) => {
 };
 
 export const getCategoyRoute = (categoryName: string) => {
-    return ConstanthPathEnum.PRODUCT_CATEGORY.replace(":category_id", categoryName);
+    return ConstanthPathEnum.PRODUCT_CATEGORY.replace(":category_name", categoryName);
 }
 
 export const getSearchRoute = (input: string) => {

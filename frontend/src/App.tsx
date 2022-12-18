@@ -41,7 +41,7 @@ function App() {
               <Route path={ConstanthPathEnum.ADMIN_COMPANY} element={<AdminCompanies />} />
             </Route>
           </Routes>
-          <Footer />
+          {/* <Footer /> */}
         </div>
       </ThemeProvider>
     </BrowserRouter>

@@ -2,54 +2,12 @@ import { Box, Container, Typography } from '@mui/material';
 import { Card, List, Pagination } from 'antd';
 import { useState, useEffect } from 'react';
 import { NavLink, useParams } from 'react-router-dom';
+import axiosInstance from '../../requests/axiosInstance';
 import { Category } from '../../type/category';
-import { Price, Product } from '../../type/product';
-import { Shop } from '../../type/shop';
+import { Product } from '../../type/product';
 import { getProductShopRoute } from '../../ultis/route';
 
 const { Meta } = Card;
-
-const category1: Category[] = [];
-
-for (var i = 0; i < 3; i++) {
-    const cat: Category = {
-        id: `category-${i}`,
-        name: `Category ${i}`,
-        imageUrl: 'http://cpsresources.com/wp-content/uploads/2014/12/appliance-electronics-industry.jpg',
-    }
-    category1.push(cat);
-}
-
-const price1: Price[] = [];
-
-for (var i = 0; i < 5; i++) {
-    const newShop: Shop = {
-        id: `shop-${i}`,
-        name: `Shop ${i}`,
-        description: 'This is best shop',
-        imageUrl: 'https://deo.shopeemobile.com/shopee/shopee-mobilemall-live-sg/homepage/26c9324913c021677768c36975d635ef.png',
-    }
-    const newPrice: Price = {
-        price: (i + 1) * 1000,
-        rate: 4.5,
-        shop: newShop,
-    }
-    price1.push(newPrice);
-}
-
-const products: Product[] = [];
-
-for (var i = 0; i < 100; i++) {
-    const item: Product = {
-        id: `product-${i}`,
-        name: `iphone 14 ${i}`,
-        description: 'Product made by Apple',
-        prices: price1,
-        categories: category1,
-        imageUrl: 'https://cdn.tgdd.vn/Products/Images/42/289696/iphone-14-pro-tim-thumb-600x600.jpg',
-    }
-    products.push(item);
-}
 
 function Products() {
     const params = useParams();
@@ -58,18 +16,44 @@ function Products() {
 
     const [title, setTitle] = useState<string>("アイテムの一覧表示");
 
-    useEffect(() => {
-        console.log(params);
-        if(params.category_id) setTitle(`カテゴリー：　${params.category_id}`);
-        else if(params.search_input) setTitle(`結果：　${params.search_input}`);
-        else setTitle("アイテムの一覧表示");
-    }, [params]);
+    const [totals, setTotals] = useState<Product[]>([]);
 
     const [listProducts, setListProducts] = useState<Product[]>([]);
 
+
+    useEffect(() => {
+        console.log(params);
+        if (params.category_name) {
+            setTitle(`カテゴリー：　${params.category_name}`);
+            axiosInstance.get(`category?search=${params.category_name}`)
+                .then(res => {
+                    axiosInstance.get(`item?categories=${res.data.data[0].id}`)
+                        .then(res1 => {
+                            setTotals(res1.data.data);
+                            if (page === 1) setListProducts(res1.data.data.slice(0, 12));
+                        });
+                });
+        }
+        else if (params.search_input) {
+            setTitle(`結果：　${params.search_input}`);
+            axiosInstance.get(`item?name=${params.search_input}`)
+                .then(res => {
+                    setTotals(res.data.data)
+                    if (page === 1) setListProducts(res.data.data.slice(0, 12));
+                })
+        }
+        else {
+            axiosInstance.get('item')
+                .then(res => {
+                    setTotals(res.data.data)
+                    if (page === 1) setListProducts(res.data.data.slice(0, 12));
+                })
+        }
+    }, [params]);
+
     useEffect(() => {
         const num = (page - 1) * 12;
-        setListProducts(products.slice(num, num + 12));
+        setListProducts(totals.slice(num, num + 12));
     }, [page]);
 
     const handlePageChange = (pageNumber: number) => {
@@ -87,17 +71,17 @@ function Products() {
                     {title}
                 </Typography>
                 <List
-                    grid={{ gutter: 12, column: 4 }}
+                    grid={{ column: 3 }}
                     dataSource={listProducts}
                     renderItem={(item: Product) => (
-                        <List.Item>
+                        <List.Item style={{ padding: "10px" }}>
                             <NavLink to={getProductShopRoute(item.id)}>
                                 <Card
                                     hoverable
                                     style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
                                     cover={<img alt='electronics image' src={item.imageUrl} style={{ height: '150px', width: '150px', padding: '15px' }} />}
                                 >
-                                    <Meta title={item.name} />
+                                    <Meta description={item.name} />
                                 </Card>
                             </NavLink>
                         </List.Item>
@@ -105,7 +89,7 @@ function Products() {
                 />
                 <Box sx={{ margin: '50px 0' }}>
                     <Pagination
-                        total={100}
+                        total={totals.length}
                         pageSize={12}
                         defaultCurrent={page}
                         onChange={handlePageChange}
