@@ -1,4 +1,4 @@
-import { Box, Button, Container, Rating, Typography } from "@mui/material";
+import { Box, Button, Container, Typography, Rating } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { Category } from "../../../../type/category";
 import { Comment } from "../../../../type/comment";
@@ -7,6 +7,7 @@ import { Shop } from "../../../../type/shop";
 import { Avatar, Input, List, Pagination } from 'antd';
 import { useEffect, useState } from "react";
 import { User } from "../../../../type/user";
+import useCommentsStore from "../../../../store/commentsStore";
 
 const { TextArea } = Input;
 
@@ -52,25 +53,8 @@ for (var i = 0; i < 20; i++) {
     products.push(item);
 }
 
-const comments: Comment[] = [];
-
-for (var i = 0; i < 30; i++) {
-    const u: User = {
-        name: `user-${i + 1}`,
-        email: 'abc',
-        avatarUrl: 'abc',
-    }
-    const c: Comment = {
-        id: `cmt-${i + 1}`,
-        content: 'acnakjsnckjasncjknasjkcsac',
-        rate: 3,
-        user: u,
-    }
-
-    comments.push(c);
-}
-
 function ProductDetail() {
+    const store = useCommentsStore((state) => state);
     const [listComment, setListComment] = useState<Comment[]>([]);
     const [comment, setComment] = useState<string>("");
     const [rate, setRate] = useState<number | null>(0);
@@ -78,15 +62,41 @@ function ProductDetail() {
     const params = useParams();
     const product = products.find(item => item.id === params.product_id)
     const price = product?.prices.find(item => item.shop.id === params.shop_id)
+    const [errorMessage, setErrorMessage] = useState<string>("");
+
+    const handleFocus = () => {
+        setErrorMessage("");
+    };
 
     const handleSubmit = () => {
-        console.log({ comment, rate })
+        if (comment && rate !== 0) {
+            console.log({comment, rate});
+            const us: User = {
+                name: localStorage.getItem('username') || 'user',
+                email: 'abc',
+                avatarUrl: 'abc',
+            }
+            const newCmt: Comment = {
+                id: '1',
+                content: comment,
+                rate: rate || 5,
+                user: us
+            }
+            if(store.comments.find(cmt => cmt.user.name === localStorage.getItem('username')))
+                store.uppdateComment(newCmt, us);
+            else store.addCommnet(newCmt);
+            setComment("");
+            setRate(0);
+            setErrorMessage("");
+        } else {
+            setErrorMessage("2 つのフィールドに入力してください");
+        }
     }
 
     useEffect(() => {
-        const num = (page - 1) * 10;
-        setListComment(comments.slice(num, num + 10));
-    }, [page])
+        const num = (page - 1) * 5;
+        setListComment(store.comments.slice(num, num + 5));
+    }, [page, comment, rate]);
 
     const handleChange = (p: number) => {
         setPage(p);
@@ -150,7 +160,7 @@ function ProductDetail() {
                                 component="div"
                                 sx={{ display: 'flex', justifyContent: 'flex-start' }}
                             >
-                                <Rating defaultValue={price?.rate} precision={0.5} readOnly />
+                                <Rating value={price?.rate} precision={0.5} readOnly />
                             </Typography>
                         </Box>
                         <Box sx={{ display: "flex", padding: "0 50px", marginTop: "50px" }}>
@@ -178,27 +188,37 @@ function ProductDetail() {
                 >
                     コメント
                 </Typography>
-                <Box sx={{ padding: "30px", display: "flex", flexDirection: "column", gap: "20px" }}>
-                    <TextArea
-                        showCount
-                        maxLength={1000}
-                        placeholder="評価..."
-                        autoSize={{ minRows: 2 }}
-                        value={comment}
-                        onChange={e => setComment(e.target.value)}
-                    />
-                    <Rating precision={0.5} value={rate} onChange={(_, value) => setRate(value)} />
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        size="medium"
-                        sx={{ width: "100px", fontWeight: "600", color: "#fff" }}
-                        onClick={handleSubmit}
-                    >
-                        評価
-                    </Button>
-                </Box>
-                <Box sx={{ padding: "0 50px" }}>
+                {localStorage.getItem('username') &&
+                    <Box sx={{ padding: "30px", display: "flex", flexDirection: "column", gap: "20px" }}>
+                        <TextArea
+                            allowClear
+                            showCount
+                            maxLength={1000}
+                            placeholder="評価..."
+                            autoSize={{ minRows: 2 }}
+                            value={comment}
+                            onChange={e => setComment(e.target.value)}
+                            onFocus={handleFocus}
+                        />
+                        <Rating
+                            precision={0.5}
+                            value={rate}
+                            onChange={(_, value) => setRate(value)}
+                            onFocus={handleFocus}
+                        />
+                        <span style={{ color: "red" }}>{errorMessage}</span>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            size="medium"
+                            sx={{ width: "100px", fontWeight: "600", color: "#fff" }}
+                            onClick={handleSubmit}
+                        >
+                            評価
+                        </Button>
+                    </Box>
+                }
+                <Box sx={{ padding: "30px 50px" }}>
                     <List
                         itemLayout="horizontal"
                         dataSource={listComment}
@@ -206,19 +226,19 @@ function ProductDetail() {
                         renderItem={(item: Comment) => (
                             <List.Item key={item.id}>
                                 <List.Item.Meta
-                                    avatar={<Avatar/>}
+                                    avatar={<Avatar />}
                                     title={item.user.name}
                                     description={item.content}
                                 />
-                                <Rating defaultValue={item.rate} precision={0.5} readOnly />
+                                <Rating value={item.rate} precision={0.5} readOnly />
                             </List.Item>
                         )}>
 
                     </List>
                     <Box sx={{ display: "flex", justifyContent: "center", margin: "50px 0" }}>
                         <Pagination
-                            total={30}
-                            pageSize={10}
+                            total={store.comments.length}
+                            pageSize={5}
                             defaultCurrent={page}
                             onChange={handleChange}
                             showSizeChanger={false}

@@ -1,4 +1,4 @@
-import { Box, Button, Container, Popover } from "@mui/material";
+import { Box, Button, Container, Menu, MenuItem, Popover } from "@mui/material";
 import { List } from "antd";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
@@ -19,14 +19,23 @@ for (var i = 0; i < 20; i++) {
 
 function Navigation() {
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const [adminEl, setAdminEl] = useState<null | HTMLElement>(null);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
 
+    const hanldeAdminOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAdminEl(event.currentTarget);
+    }
+
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    const handleAdminClose = () => {
+        setAdminEl(null);
+    }
 
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
@@ -75,6 +84,51 @@ function Navigation() {
                     <NavLink to={ConstanthPathEnum.COMPANY_LIST}>
                         <Button sx={{ fontSize: "16px", fontWeight: "700" }}>詳細なサービス</Button>
                     </NavLink>
+                    {localStorage.getItem('isAdmin') &&
+                        <Box>
+                            <Button
+                                sx={{ fontSize: "16px", fontWeight: "700" }}
+                                onClick={hanldeAdminOpen}
+                            >
+                                アドミン
+                            </Button>
+                            <Menu
+                                anchorEl={adminEl}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'right',
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                open={Boolean(adminEl)}
+                                onClose={handleAdminClose}
+                            >
+                                <MenuItem >
+                                    <NavLink to={ConstanthPathEnum.ADMIN_PRODUCT} style={{ color: "#333" }} onClick={handleAdminClose}>
+                                        プロダクト
+                                    </NavLink>
+                                </MenuItem>
+                                <MenuItem >
+                                    <NavLink to={ConstanthPathEnum.ADMIN_CATEGORY} style={{ color: "#333" }} onClick={handleAdminClose}>
+                                        カテゴリー
+                                    </NavLink>
+                                </MenuItem>
+                                <MenuItem >
+                                    <NavLink to={ConstanthPathEnum.ADMIN_SHOP} style={{ color: "#333" }} onClick={handleAdminClose}>
+                                        売り場
+                                    </NavLink>
+                                </MenuItem>
+                                <MenuItem >
+                                    <NavLink to={ConstanthPathEnum.ADMIN_COMPANY} style={{ color: "#333" }} onClick={handleAdminClose}>
+                                        詳細なサービス
+                                    </NavLink>
+                                </MenuItem>
+                            </Menu>
+                        </Box>
+                    }
                 </Box>
             </Container>
         </Box>
