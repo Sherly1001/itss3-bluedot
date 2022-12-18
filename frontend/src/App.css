@@ -19,6 +19,7 @@ a {
   margin: 20px auto;
   align-self: center;
   box-shadow: 0 2px 5px 0 rgba(51, 62, 73, 0.1);
+  margin-bottom: 300px;
 }
 
 .form .heading {
