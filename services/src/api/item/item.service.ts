@@ -47,7 +47,7 @@ export class ItemService {
       page = Math.abs(page);
       page == 0 && ++page;
 
-      const totalItems = await this.itemModel.countDocuments();
+      const totalItems = await this.itemModel.find(filter).countDocuments();
       const lastPage = Math.ceil(totalItems / limit);
       const skip = limit * Math.floor(page - 1);
 
