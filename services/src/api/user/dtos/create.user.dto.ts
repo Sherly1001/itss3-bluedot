@@ -11,7 +11,6 @@ export class UserDto {
   email: string;
 
   @ApiProperty()
-  @IsString()
   avatarUrl: string;
 
   @ApiProperty()
