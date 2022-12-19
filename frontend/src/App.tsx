@@ -26,7 +26,6 @@ function App() {
           <Header />
           <Routes>
             <Route path={ConstanthPathEnum.HOME_PAGE} element={<HomePage />} index />
-            <Route path={ConstanthPathEnum.PRODUCT_LIST} element={<Products />} />
             <Route path={ConstanthPathEnum.PRODUCT_CATEGORY} element={<Products />} />
             <Route path={ConstanthPathEnum.PRODUCT_SEARCH} element={<Products />} />
             <Route path={ConstanthPathEnum.PRODUCT_SHOP} element={<ProductShop />} />

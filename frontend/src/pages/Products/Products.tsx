@@ -3,7 +3,6 @@ import { Card, List, Pagination } from 'antd';
 import { useState, useEffect } from 'react';
 import { NavLink, useParams } from 'react-router-dom';
 import axiosInstance from '../../requests/axiosInstance';
-import { Category } from '../../type/category';
 import { Product } from '../../type/product';
 import { getProductShopRoute } from '../../ultis/route';
 
@@ -16,45 +15,33 @@ function Products() {
 
     const [title, setTitle] = useState<string>("アイテムの一覧表示");
 
-    const [totals, setTotals] = useState<Product[]>([]);
+    const [totals, setTotals] = useState<number>(0);
 
     const [listProducts, setListProducts] = useState<Product[]>([]);
 
 
     useEffect(() => {
-        console.log(params);
         if (params.category_name) {
-            setTitle(`カテゴリー：　${params.category_name}`);
+            setTitle(`カテゴリー：　${params.category_name}`);            
             axiosInstance.get(`category?search=${params.category_name}`)
                 .then(res => {
-                    axiosInstance.get(`item?categories=${res.data.data[0].id}`)
+                    axiosInstance.get(`item?page=${page}&categories=${res.data.data[0].id}`)
                         .then(res1 => {
-                            setTotals(res1.data.data);
-                            if (page === 1) setListProducts(res1.data.data.slice(0, 12));
+                            setTotals(res1.data.data.totalItems);
+                            setListProducts(res1.data.data.items);
                         });
                 });
         }
-        else if (params.search_input) {
+        
+        if (params.search_input) {
             setTitle(`結果：　${params.search_input}`);
-            axiosInstance.get(`item?name=${params.search_input}`)
+            axiosInstance.get(`item?page=${page}&name=${params.search_input}`)
                 .then(res => {
-                    setTotals(res.data.data)
-                    if (page === 1) setListProducts(res.data.data.slice(0, 12));
+                    setTotals(res.data.data.totalItems);
+                    setListProducts(res.data.data.items);
                 })
         }
-        else {
-            axiosInstance.get('item')
-                .then(res => {
-                    setTotals(res.data.data)
-                    if (page === 1) setListProducts(res.data.data.slice(0, 12));
-                })
-        }
-    }, [params]);
-
-    useEffect(() => {
-        const num = (page - 1) * 12;
-        setListProducts(totals.slice(num, num + 12));
-    }, [page]);
+    }, [params, page]);
 
     const handlePageChange = (pageNumber: number) => {
         setPage(pageNumber);
@@ -71,7 +58,7 @@ function Products() {
                     {title}
                 </Typography>
                 <List
-                    grid={{ column: 3 }}
+                    grid={{ column: 4 }}
                     dataSource={listProducts}
                     renderItem={(item: Product) => (
                         <List.Item style={{ padding: "10px" }}>
@@ -79,7 +66,7 @@ function Products() {
                                 <Card
                                     hoverable
                                     style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-                                    cover={<img alt='electronics image' src={item.imageUrl} style={{ height: '150px', width: '150px', padding: '15px' }} />}
+                                    cover={<img alt='electronics image' src={item.imageUrl} style={{ height: '150px', padding: '15px' }} />}
                                 >
                                     <Meta description={item.name} />
                                 </Card>
@@ -89,8 +76,8 @@ function Products() {
                 />
                 <Box sx={{ margin: '50px 0' }}>
                     <Pagination
-                        total={totals.length}
-                        pageSize={12}
+                        total={totals}
+                        pageSize={20}
                         defaultCurrent={page}
                         onChange={handlePageChange}
                         showSizeChanger={false}

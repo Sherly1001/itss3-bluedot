@@ -1,58 +1,86 @@
 import { Box, Button, Container, Typography, Rating } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { Comment } from "../../../../type/comment";
 import { Price, Product } from "../../../../type/product";
 import { Avatar, Input, List, Pagination } from 'antd';
 import { useEffect, useState } from "react";
-import { User } from "../../../../type/user";
-import useCommentsStore from "../../../../store/commentsStore";
 import axiosInstance from "../../../../requests/axiosInstance";
+import { Shop } from "../../../../type/shop";
 
 const { TextArea } = Input;
 
+interface cmtResponse{
+    id: string;
+    content: string;
+    rate: number;
+    item: string;
+    shop: Shop | undefined;
+    user: {
+        name: string | null;
+        email: string | null;
+        isAdmin: boolean;
+    }
+}
+
 function ProductDetail() {
-    const store = useCommentsStore((state) => state);
-    const [listComment, setListComment] = useState<Comment[]>([]);
+    const [product, setProduct] = useState<Product>();
+    const [totals, setTotals] = useState<cmtResponse[]>([]);
+    const [listComment, setListComment] = useState<cmtResponse[]>([]);
     const [comment, setComment] = useState<string>("");
     const [rate, setRate] = useState<number | null>(0);
     const [page, setPage] = useState<number>(1)
     const params = useParams();
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const [product, setProduct] = useState<Product>();
 
     const handleFocus = () => {
         setErrorMessage("");
     };
 
     useEffect(() => {
-        console.log(params)
-        axiosInstance.get('item')
+        //console.log(params)
+        axiosInstance.get(`item/${params.product_id}?page=1&shops=${params.shop_id}`)
             .then(res => {
-                setProduct(res.data.data.find((item: Product) => item.id === params.product_id));
+                //console.log(res.data.data.items[0])
+                setProduct(res.data.data.items[0]);
             })
         axiosInstance.get(`comment/${params.product_id}/${params.shop_id}`)
-            .then(res => console.log(res))
+            .then(res => {
+                //console.log(res.data.data);
+                setTotals(res.data.data);
+                if(page === 1) setListComment(res.data.data.slice(0, 5));
+            })
     }, [])
 
     const price: Price | undefined = product?.prices.find(item => item.shop.id === params.shop_id);
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (comment && rate !== 0) {
-            console.log({ comment, rate });
-            const us: User = {
-                name: localStorage.getItem('username') || 'user',
-                email: 'abc',
-                avatarUrl: 'abc',
-            }
-            const newCmt: Comment = {
-                id: '1',
+            //console.log({product, shop});
+            const reqBody = {
                 content: comment,
                 rate: rate || 5,
-                user: us
+                item: params.product_id,
+                shop: params.shop_id,
+                deliverer: null,
             }
-            if (store.comments.find(cmt => cmt.user.name === localStorage.getItem('username')))
-                store.uppdateComment(newCmt, us);
-            else store.addCommnet(newCmt);
+            //console.log(reqBody);
+            axiosInstance.post('comment', reqBody)
+                .then(res => {
+                    const newComt: any = {
+                        id: res.data.data.id,
+                        content: res.data.data.content,
+                        rate: res.data.data.rate,
+                        item: res.data.data.item,
+                        shop: price?.shop,
+                        user: {
+                            name: localStorage.getItem('username'),
+                            email: localStorage.getItem('useremail'),
+                            isAdmin: false
+                        }
+
+                    }
+                    setTotals([ newComt, ...totals ]);
+                    //console.log(res.data.data);
+                })
             setComment("");
             setRate(0);
             setErrorMessage("");
@@ -63,8 +91,8 @@ function ProductDetail() {
 
     useEffect(() => {
         const num = (page - 1) * 5;
-        setListComment(store.comments.slice(num, num + 5));
-    }, [page, comment, rate]);
+        setListComment(totals.slice(num, num + 5));
+    }, [page, totals]);
 
     const handleChange = (p: number) => {
         setPage(p);
@@ -89,14 +117,14 @@ function ProductDetail() {
                             <Typography
                                 variant="h6"
                                 component="div"
-                                sx={{ display: 'flex', justifyContent: 'flex-start', width: "30%" }}
+                                sx={{ display: 'flex', justifyContent: 'flex-start', width: "20%" }}
                             >
                                 製品
                             </Typography>
                             <Typography
                                 variant="h6"
                                 component="div"
-                                sx={{ display: 'flex', justifyContent: 'flex-start', width: "40%" }}
+                                sx={{ display: 'flex', justifyContent: 'flex-start', width: "60%" }}
                             >
                                 {product?.name}
                             </Typography>
@@ -112,14 +140,14 @@ function ProductDetail() {
                             <Typography
                                 variant="h6"
                                 component="div"
-                                sx={{ display: 'flex', justifyContent: 'flex-start', width: "30%" }}
+                                sx={{ display: 'flex', justifyContent: 'flex-start', width: "20%" }}
                             >
                                 値段
                             </Typography>
                             <Typography
                                 variant="h6"
                                 component="div"
-                                sx={{ display: 'flex', justifyContent: 'flex-start', width: "40%" }}
+                                sx={{ display: 'flex', justifyContent: 'flex-start', width: "60%" }}
                             >
                                 {price?.price}
                             </Typography>
@@ -135,7 +163,7 @@ function ProductDetail() {
                             <Typography
                                 variant="h6"
                                 component="div"
-                                sx={{ display: 'flex', justifyContent: 'flex-start', width: "30%" }}
+                                sx={{ display: 'flex', justifyContent: 'flex-start', width: "20%" }}
                             >
                                 売り場
                             </Typography>
@@ -186,12 +214,12 @@ function ProductDetail() {
                         </Button>
                     </Box>
                 }
-                <Box sx={{ padding: "30px 50px" }}>
+                <Box sx={{ padding: "30px" }}>
                     <List
                         itemLayout="horizontal"
                         dataSource={listComment}
                         size="large"
-                        renderItem={(item: Comment) => (
+                        renderItem={(item: cmtResponse) => (
                             <List.Item key={item.id}>
                                 <List.Item.Meta
                                     avatar={<Avatar />}
@@ -205,7 +233,7 @@ function ProductDetail() {
                     </List>
                     <Box sx={{ display: "flex", justifyContent: "center", margin: "50px 0" }}>
                         <Pagination
-                            total={store.comments.length}
+                            total={totals.length}
                             pageSize={5}
                             defaultCurrent={page}
                             onChange={handleChange}
