@@ -2,8 +2,8 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import { BaseResult } from 'src/domain/dtos/base.result';
+import { Pagging } from 'src/domain/dtos/pagging';
 import { Item, ItemDocument } from 'src/domain/schemas';
-import { CommentService } from '../comment/comment.service';
 import { GetItemsDto, UpdateItemDto } from './dtos';
 
 @Injectable()
@@ -11,13 +11,16 @@ export class ItemService {
   constructor(
     @InjectModel(Item.name)
     private readonly itemModel: Model<ItemDocument>,
-    private readonly commentService: CommentService,
   ) {}
 
-  async getItems(query: GetItemsDto) {
-    const result = new BaseResult<Item[]>();
+  async getItems(id: string, query: GetItemsDto) {
+    const result = new BaseResult<Pagging<Item>>();
     const filter: FilterQuery<ItemDocument> = {};
-    let { name, categories, shops } = query;
+    let { name, categories, shops, limit, page } = query;
+
+    if (id) {
+      filter._id = id;
+    }
 
     if (typeof categories == 'string') {
       categories = [categories];
@@ -40,21 +43,28 @@ export class ItemService {
     }
 
     try {
+      limit = Math.abs(limit);
+      page = Math.abs(page);
+      page == 0 && ++page;
+
+      const totalItems = await this.itemModel.countDocuments();
+      const lastPage = Math.ceil(totalItems / limit);
+      const skip = limit * Math.floor(page - 1);
+
       const items: any[] = await this.itemModel
         .find(filter)
+        .limit(limit)
+        .skip(skip)
         .populate(['categories', 'prices.shop']);
 
-      for (let i = 0; i < items.length; ++i) {
-        for (let j = 0; j < items[i].prices.length; ++j) {
-          const rate = await this.commentService.getRating(
-            items[i]._id.toString(),
-            items[i].prices[j].shop?._id?.toString(),
-          );
-          items[i].prices[i].rate = rate;
-        }
-      }
-
-      result.data = items;
+      result.data = Object.assign(new Pagging(), {
+        totalItems,
+        currentPage: Math.floor(page),
+        lastPage,
+        hasNext: page < lastPage,
+        hasPrev: page > 1,
+        items,
+      });
     } catch (err) {
       throw new UnprocessableEntityException(err.toString());
     }

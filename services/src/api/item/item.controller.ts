@@ -15,10 +15,12 @@ import {
   ApiBearerAuth,
   ApiExtraModels,
   ApiOkResponse,
+  ApiParam,
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
 import { BaseResult } from 'src/domain/dtos/base.result';
+import { Pagging } from 'src/domain/dtos/pagging';
 import { Item } from 'src/domain/schemas';
 import { HttpExceptionFilter } from 'src/filters';
 import { AdminGuard } from '../user/admin.auth.guard';
@@ -28,27 +30,28 @@ import { ItemService } from './item.service';
 
 @ApiTags('ItemEndpoint')
 @UseFilters(HttpExceptionFilter)
-@ApiExtraModels(BaseResult, Item)
+@ApiExtraModels(BaseResult, Pagging, Item)
 @Controller('item')
 export class ItemController {
   constructor(private readonly itemService: ItemService) {}
 
+  @ApiParam({
+    name: 'id',
+    required: false,
+  })
   @ApiOkResponse({
     schema: {
-      $ref: getSchemaPath(BaseResult),
-      properties: {
-        data: {
-          type: 'array',
-          items: {
-            $ref: getSchemaPath(Item),
-          },
-        },
-      },
+      $ref: getSchemaPath(BaseResult<Pagging<Item>>),
     },
   })
-  @Get()
-  async getItems(@Res() res, @Query() query: GetItemsDto) {
-    const result = await this.itemService.getItems(query);
+  @Get(':id?')
+  async getItems(
+    @Res() res,
+    @Param('id') id: string,
+    @Query() query: GetItemsDto,
+  ) {
+    id = id?.replace(/[^\w]/g, '');
+    const result = await this.itemService.getItems(id, query);
     return res.json(result);
   }
 
