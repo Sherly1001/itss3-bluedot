@@ -16,10 +16,10 @@ function HomePage() {
 
     useEffect(() => {
         axiosInstance.get('category')
-            .then(res => setCategories(res.data.data.slice(0, 8)));
+            .then(res => setCategories(res.data.data.slice(0, 10)));
         
         axiosInstance.get('item')
-            .then(res => setProducts(res.data.data.slice(0, 9)));
+            .then(res => setProducts(res.data.data.items));
     }, []);
 
     return (
@@ -37,7 +37,7 @@ function HomePage() {
                         <Card.Grid
                             key={cat.id}
                             style={{
-                                width: '25%',
+                                width: '20%',
                                 textAlign: 'center',
                             }}>
                             <NavLink to={getCategoyRoute(cat.name)} style={{ color: "#333" }}>
@@ -59,7 +59,7 @@ function HomePage() {
                     アイテム
                 </Typography>
                 <List
-                    grid={{ column: 3 }}
+                    grid={{ column: 4 }}
                     dataSource={products}
                     renderItem={(item: Product) => (
                         <List.Item style={{ padding: "10px" }}>
@@ -67,7 +67,7 @@ function HomePage() {
                                 <Card
                                     hoverable
                                     style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-                                    cover={<img alt='electronics image' src={item.imageUrl} style={{ height: '150px', width: '150px', padding: '15px' }} />}
+                                    cover={<img alt='electronics image' src={item.imageUrl} style={{ height: '150px', padding: '15px' }} />}
                                 >
                                     <Meta description={item.name} />
                                 </Card>

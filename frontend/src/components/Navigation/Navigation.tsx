@@ -7,17 +7,6 @@ import axiosInstance from "../../requests/axiosInstance";
 import { Category } from "../../type/category";
 import { getCategoyRoute } from "../../ultis/route";
 
-// const categories: Category[] = [];
-
-// for (var i = 0; i < 20; i++) {
-//     const cat: Category = {
-//         id: `book-${i}`,
-//         name: `book ${i}`,
-//         imageUrl: 'https://dictionary.cambridge.org/vi/images/thumb/book_noun_001_01679.jpg',
-//     }
-//     categories.push(cat);
-// }
-
 function Navigation() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -50,13 +39,13 @@ function Navigation() {
     return (
         <Box sx={{ backgroundColor: "#e91e63", padding: "10px", width: "100%", position: "sticky", top: "0", zIndex: "9", opacity: "0.7" }}>
             <Container maxWidth="lg">
-                <Box sx={{ display: "flex", gap: "10%", justifyContent: "flex-start", paddingLeft: "10px" }}>
+                <Box sx={{ display: "flex", gap: "10%", justifyContent: "space-between", paddingLeft: "10px" }}>
                     <NavLink to={ConstanthPathEnum.HOME_PAGE}>
                         <Button sx={{ fontSize: "16px", fontWeight: "700" }}>ホーム</Button>
                     </NavLink>
-                    <NavLink to={ConstanthPathEnum.PRODUCT_LIST}>
+                    {/* <NavLink to={ConstanthPathEnum.PRODUCT_LIST}>
                         <Button sx={{ fontSize: "16px", fontWeight: "700" }}>プロダクト</Button>
-                    </NavLink>
+                    </NavLink> */}
                     <Button
                         aria-describedby={id}
                         sx={{ fontSize: "16px", fontWeight: "700" }}
@@ -76,7 +65,7 @@ function Navigation() {
                         sx={{ zIndex: "10" }}
                     >
                         <List
-                            style={{ width: "700px", padding: "10px 0 0 20px" }}
+                            style={{ width: "700px", height: "500px", padding: "10px 0 0 20px" }}
                             grid={{ column: 4 }}
                             dataSource={categories}
                             size="large"

@@ -6,7 +6,6 @@ export enum ConstanthPathEnum{
     PRODUCT_DETAIL="/products/:product_id/shops/:shop_id",
     PRODUCT_CATEGORY="/products/categories/:category_name",
     PRODUCT_SEARCH="/products/search/:search_input",
-    PRODUCT_LIST="/products",
     COMPANY_LIST="/companies",
     ADMIN_PRODUCT="/admin/products",
     ADMIN_CATEGORY="/admin/categories",

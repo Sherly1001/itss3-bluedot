@@ -24,6 +24,7 @@ function SignIn() {
             localStorage.setItem('token', res.data.data.access_token)
             const res1 = await axiosInstance.get('user')
             localStorage.setItem('username', res1.data.data.name)
+            localStorage.setItem('useremail', res1.data.data.email)
             if(res1.data.data.isAdmin === true) localStorage.setItem('isAdmin', 'admin')
             navigate('/')
         } catch (e: any) {
