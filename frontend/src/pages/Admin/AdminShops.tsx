@@ -25,7 +25,7 @@ function AdminShops() {
                 setTotals(res.data.data);
                 if (page === 1) setListShops(res.data.data.slice(0, 5));
             })
-    }, [open, selected]);
+    }, []);
 
     useEffect(() => {
         const num = (page - 1) * 5;
@@ -71,10 +71,12 @@ function AdminShops() {
             imageUrl: image,
         }
         axiosInstance.put(`shop/${selected}`, newShop)
-            .then(res => setTotals(totals.map(item => {
-                if(item.id === res.data.data.id) item = {...res.data.data}
-                return item;
-            })));
+            .then(res => {
+                setTotals(totals.map(item => {
+                    if (item.id === res.data.data.id) item = { ...res.data.data }
+                    return item;
+                }))
+            });
         setName("");
         setDescription("");
         setImage("");
