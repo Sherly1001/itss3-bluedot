@@ -8,6 +8,8 @@ export enum ConstanthPathEnum{
     PRODUCT_SEARCH="/products/search/:search_input",
     COMPANY_LIST="/companies",
     ADMIN_PRODUCT="/admin/products",
+    ADMIN_PRODUCT_ADD="/admin/products/add",
+    ADMIN_PRODUCT_DETAIL="/admin/products/:product_id",
     ADMIN_CATEGORY="/admin/categories",
     ADMIN_SHOP="/admin/shops",
     ADMIN_COMPANY="/admin/companies",

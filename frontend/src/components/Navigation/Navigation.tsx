@@ -5,7 +5,7 @@ import { NavLink } from "react-router-dom";
 import { ConstanthPathEnum } from "../../constanth/constanth.path";
 import axiosInstance from "../../requests/axiosInstance";
 import { Category } from "../../type/category";
-import { getCategoyRoute } from "../../ultis/route";
+import { getCategoryRoute } from "../../ultis/route";
 
 function Navigation() {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -71,7 +71,7 @@ function Navigation() {
                             size="large"
                             renderItem={(item: Category) => (
                                 <List.Item style={{ padding: "0 10px", width: "150px" }}>
-                                    <NavLink to={getCategoyRoute(item.name)} style={{ color: "#333", fontSize: "14px" }} onClick={handleClose}>
+                                    <NavLink to={getCategoryRoute(item.name)} style={{ color: "#333", fontSize: "14px" }} onClick={handleClose}>
                                         {item.name}
                                     </NavLink>
                                 </List.Item>
