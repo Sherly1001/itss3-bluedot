@@ -2,6 +2,7 @@ import { Box, Container, Rating, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import axiosInstance from "../../../requests/axiosInstance";
+import { Category } from "../../../type/category";
 import { Price, Product } from "../../../type/product";
 import { getProductDetailRoute } from "../../../ultis/route";
 
@@ -39,6 +40,18 @@ function ProductShop() {
                             >
                                 製品：{product?.name}
                             </Typography>
+                            <Box sx={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+                                {product?.categories.map((cat: Category) => (
+                                    <Typography
+                                        variant="subtitle1"
+                                        component="div"
+                                        key={cat.id}
+                                        sx={{ backgroundColor: "#e0e0e0", padding: "2px 10px", borderRadius: "20px" }}
+                                    >
+                                        {cat.name}
+                                    </Typography>
+                                ))}
+                            </Box>
                             <Typography
                                 variant="subtitle1"
                                 component="div"

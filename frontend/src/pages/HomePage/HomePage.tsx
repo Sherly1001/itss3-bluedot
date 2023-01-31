@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 import axiosInstance from '../../requests/axiosInstance';
 import { Category } from '../../type/category';
 import { Product } from '../../type/product';
-import { getCategoyRoute, getProductShopRoute } from '../../ultis/route';
+import { getCategoryRoute, getProductShopRoute } from '../../ultis/route';
 
 const { Meta } = Card;
 
@@ -40,7 +40,7 @@ function HomePage() {
                                 width: '20%',
                                 textAlign: 'center',
                             }}>
-                            <NavLink to={getCategoyRoute(cat.name)} style={{ color: "#333" }}>
+                            <NavLink to={getCategoryRoute(cat.name)} style={{ color: "#333" }}>
                                 <Box style={{ display:"flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
                                     <img src={cat.imageUrl} style={{ height: "70px", width: "70px" }} />
                                     {cat.name}

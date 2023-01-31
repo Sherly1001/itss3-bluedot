@@ -1,22 +1,31 @@
-import { Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from "@mui/material";
+import { Box, Button, Container, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import axiosInstance from "../../requests/axiosInstance";
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Pagination } from 'antd';
+import { Form, Input, Modal, Pagination } from 'antd';
 import { Category } from "../../type/category";
+
+const { confirm } = Modal;
+
+interface NewCategoryValue {
+    name: string;
+    imageUrl: string;
+}
 
 function AdminCategories() {
     const [totals, setTotals] = useState<Category[]>([]);
     const [listCategories, setListCategories] = useState<Category[]>([]);
     const [page, setPage] = useState<number>(1);
+
     // Add new category
     const [open, setOpen] = useState<boolean>(false);
-    const [name, setName] = useState<string>("");
-    const [image, setImage] = useState<string>("");
+    const [addForm] = Form.useForm();
+
     // Edit
     const [selected, setSelected] = useState<string>("");
+    const [editForm] = Form.useForm();
 
     useEffect(() => {
         axiosInstance.get('category')
@@ -31,58 +40,64 @@ function AdminCategories() {
         setListCategories(totals.slice(num, num + 5));
     }, [page, totals]);
 
-    const handleOpen = () => {
-        setOpen(true)
-    };
-    const handleClose = () => {
-        setName("");
-        setImage("");
-        setOpen(false);
-        setSelected("");
-    };
     const handleAdd = () => {
-        const newCategory = {
-            name: name,
-            imageUrl: image,
-        }
-        axiosInstance.post("category", newCategory)
-            .then(res => {
-                setTotals([res.data.data[0], ...totals]);
-            });
-        setName("");
-        setImage("");
-        setOpen(false);
-    }
+        addForm
+            .validateFields()
+            .then((values: NewCategoryValue) => {
+                addForm.resetFields();
+                axiosInstance.post("category", values)
+                    .then(res => {
+                        setTotals([res.data.data[0], ...totals]);
+                        setOpen(false);
+                    });
+            })
+            .catch((info) => {
+                console.log('Validate failed: ', info);
+            })
+    };
 
     const handleEdit = (id: string) => {
         const selectedCategory = listCategories.find(item => item.id === id);
-        setName(selectedCategory?.name || "");
-        setImage(selectedCategory?.imageUrl || "");
+        editForm.setFieldsValue({
+            name: selectedCategory?.name,
+            imageUrl: selectedCategory?.imageUrl
+        });
         setSelected(id);
-    }
+    };
 
     const handleUppdate = () => {
-        const newCategory = {
-            name: name,
-            imageUrl: image,
-        }
-        axiosInstance.put(`category/${selected}`, newCategory)
-            .then(res => setTotals(totals.map(item => {
-                if(item.id === res.data.data.id) item = {...res.data.data}
-                return item;
-            })));
-        setName("");
-        setImage("");
-        setSelected("");
-    }
+        editForm
+            .validateFields()
+            .then((values: NewCategoryValue) => {
+                editForm.resetFields();
+                axiosInstance.put(`category/${selected}`, values)
+                    .then(res => {
+                        setTotals(totals.map(item => {
+                            if (item.id === res.data.data.id) item = { ...res.data.data }
+                            return item;
+                        }));
+                        setSelected("");
+                    });
+            })
+            .catch((info) => {
+                console.log('Validate failed: ', info);
+            })
+    };
 
-    const handleDelete = (id: string) => {
-        const deleteCategories = {
-            ids: [id],
-        }
-        // axiosInstance.delete("category", deleteCategories);
-        setTotals(totals.filter(item => item.id !== id));
-    }
+    const showConfirm = (id: string) => {
+        confirm({
+            content: "これらのアイテムを削除しますか?",
+            okText: "同意",
+            cancelText: "キャンセル",
+            onOk() {
+                const deleteCategories = {
+                    ids: [id]
+                }
+                axiosInstance.delete("category", {data: deleteCategories});
+                setTotals(totals.filter(item => item.id !== id));
+            }
+        })
+    };
 
     const handleChange = (p: number) => {
         setPage(p);
@@ -102,41 +117,50 @@ function AdminCategories() {
                     <Button
                         variant="contained"
                         color="secondary"
-                        onClick={handleOpen}
+                        onClick={() => setOpen(true)}
                         startIcon={<AddIcon />}
                     >
                         追加
                     </Button>
-                    <Dialog
-                        fullWidth
-                        maxWidth="sm"
+                    <Modal
+                        title="新しいカテゴリー"
                         open={open}
-                        onClose={handleClose}
+                        okText="追加"
+                        cancelText="キャンセル"
+                        onCancel={() => setOpen(false)}
+                        onOk={handleAdd}
                     >
-                        <DialogTitle>新しいカテゴリー</DialogTitle>
-                        <DialogContent>
-                            <TextField
-                                value={name}
+                        <Form
+                            form={addForm}
+                            layout="vertical"
+                            name="add_form"
+                        >
+                            <Form.Item
+                                name="name"
                                 label="名前"
-                                fullWidth
-                                variant="standard"
-                                margin="dense"
-                                onChange={e => setName(e.target.value)}
-                            />
-                            <TextField
-                                value={image}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "このフィールドに入力してください。"
+                                    }
+                                ]}
+                            >
+                                <Input />
+                            </Form.Item>
+                            <Form.Item
+                                name="imageUrl"
                                 label="写真リンク"
-                                fullWidth
-                                variant="standard"
-                                margin="dense"
-                                onChange={e => setImage(e.target.value)}
-                            />
-                        </DialogContent>
-                        <DialogActions>
-                            <Button variant="contained" color="secondary" onClick={handleAdd}>追加</Button>
-                            <Button variant="contained" color="secondary" onClick={handleClose}>キャンセル</Button>
-                        </DialogActions>
-                    </Dialog>
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "このフィールドに入力してください。"
+                                    }
+                                ]}
+                            >
+                                <Input />
+                            </Form.Item>
+                        </Form>
+                    </Modal>
                 </Box>
                 <Box
                     sx={{
@@ -184,7 +208,7 @@ function AdminCategories() {
                                 <Button
                                     variant="contained"
                                     color="secondary"
-                                    onClick={() => handleDelete(cat.id)}
+                                    onClick={() => showConfirm(cat.id)}
                                     startIcon={<DeleteIcon />}
                                 >
                                     消去
@@ -202,36 +226,45 @@ function AdminCategories() {
                         showSizeChanger={false}
                     />
                 </Box>
-                <Dialog
-                    fullWidth
-                    maxWidth="sm"
+                <Modal
+                    title="カテゴリーを編集"
                     open={!!selected}
-                    onClose={handleClose}
+                    okText="編集"
+                    cancelText="キャンセル"
+                    onCancel={() => setSelected("")}
+                    onOk={handleUppdate}
                 >
-                    <DialogTitle>売り場を編集</DialogTitle>
-                    <DialogContent>
-                        <TextField
-                            value={name}
+                    <Form
+                        form={editForm}
+                        layout="vertical"
+                        name="edit_form"
+                    >
+                        <Form.Item
+                            name="name"
                             label="名前"
-                            fullWidth
-                            variant="standard"
-                            margin="dense"
-                            onChange={e => setName(e.target.value)}
-                        />
-                        <TextField
-                            value={image}
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "このフィールドに入力してください。"
+                                }
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            name="imageUrl"
                             label="写真リンク"
-                            fullWidth
-                            variant="standard"
-                            margin="dense"
-                            onChange={e => setImage(e.target.value)}
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button variant="contained" color="secondary" onClick={handleUppdate}>編集</Button>
-                        <Button variant="contained" color="secondary" onClick={handleClose}>キャンセル</Button>
-                    </DialogActions>
-                </Dialog>
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "このフィールドに入力してください。"
+                                }
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Form>
+                </Modal>
             </Container>
         </Box>
     );

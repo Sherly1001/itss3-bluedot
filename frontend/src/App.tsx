@@ -17,6 +17,8 @@ import AdminProducts from './pages/Admin/AdminProducts';
 import AdminShops from './pages/Admin/AdminShops';
 import PrivateRoutes from './pages/PrivateRoutes/PrivateRoutes';
 import Footer from './components/Footer/Footer';
+import AdminProductDetail from './pages/Admin/AdminProductDetail';
+import ProductAdd from './pages/Admin/ProductAdd';
 
 function App() {
   return (
@@ -35,6 +37,8 @@ function App() {
             <Route path={ConstanthPathEnum.SIGN_UP} element={<SignUp />} />
             <Route element={<PrivateRoutes />}>
               <Route path={ConstanthPathEnum.ADMIN_PRODUCT} element={<AdminProducts />} />
+              <Route path={ConstanthPathEnum.ADMIN_PRODUCT_ADD} element={<ProductAdd />} />
+              <Route path={ConstanthPathEnum.ADMIN_PRODUCT_DETAIL} element={<AdminProductDetail />} />
               <Route path={ConstanthPathEnum.ADMIN_SHOP} element={<AdminShops />} />
               <Route path={ConstanthPathEnum.ADMIN_CATEGORY} element={<AdminCategories />} />
               <Route path={ConstanthPathEnum.ADMIN_COMPANY} element={<AdminCompanies />} />
