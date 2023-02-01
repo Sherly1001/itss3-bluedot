@@ -1,6 +1,6 @@
-import { Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Rating, Select, SelectChangeEvent, TextField, Typography } from "@mui/material";
+import { Box, Button, Container, Rating, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Form, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../requests/axiosInstance";
 import { Price, Product } from "../../type/product";
 import EditIcon from '@mui/icons-material/Edit';
@@ -8,131 +8,184 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Category } from "../../type/category";
 import AddIcon from '@mui/icons-material/Add';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import { Shop } from "../../type/shop";
+import { Form, Input, Modal, Select } from "antd";
+import { ConstanthPathEnum } from "../../constanth/constanth.path";
+
+const { confirm } = Modal;
+
+interface NewProduct {
+    name: string;
+    description: string;
+    imageUrl: string;
+    categories: string[];
+}
 
 function AdminProductDetail() {
     const [open, setOpen] = useState<boolean>(false);
     const [product, setProduct] = useState<Product>();
     const [prices, setPrices] = useState<Price[]>([]);
     const [edit, setEdit] = useState<boolean>(false);
-    const [name, setName] = useState<string>("");
-    const [description, setDescription] = useState<string>("");
-    const [image, setImage] = useState<string>("");
-    const [price, setPrice] = useState<string>("");
     const [shops, setShops] = useState<Shop[]>([]);
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [shopId, setShopId] = useState<string>("");
+    const [categories, setCategories] = useState([]);
     const [selected, setSelected] = useState<string>("");
-    const [catSelect, setCatSelect] = useState<string[]>([]);
+    const [infoEdit, setInfoEdit] = useState<boolean>(false);
+    const [info, setInfo] = useState<NewProduct>();
 
     const params = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
             const res = await axiosInstance.get(`item/${params.product_id}?page=1`)
             setProduct(res.data.data.items[0]);
             setPrices(res.data.data.items[0].prices);
+            setInfo({
+                name: res.data.data.items[0].name,
+                description: res.data.data.items[0].description,
+                imageUrl: res.data.data.items[0].imageUrl,
+                categories: res.data.data.items[0].categories.map((item: Category) => item.id)
+            });
             const res1 = await axiosInstance.get('shop');
             setShops(res1.data.data);
             const res2 = await axiosInstance.get('category');
-            setCategories(res2.data.data);
+            setCategories(res2.data.data.map((item: Category) => ({
+                value: item.id,
+                label: item.name,
+            })));
         }
         fetchData();
     }, []);
 
-    const handleOpen = () => {
-        setOpen(true);
-    }
-
-    const handleEdit = () => {
-        setEdit(true);
-    }
-
-    const handleCancel = () => {
-        setEdit(false);
-    }
-
-    const handleClose = () => {
-        setPrice("");
-        setShopId("");
-        setOpen(false);
-        setSelected("");
-    }
-
-    const handleChangeShop = (e: SelectChangeEvent) => {
-        setShopId(e.target.value as string);
-    }
+    // Edit Price:
+    const [addForm] = Form.useForm();
+    const [editForm] = Form.useForm();
 
     const handleAddItem = () => {
         if (edit) {
-            const newPrice: Price = {
-                price: +price,
-                rate: 0,
-                shop: shops.find(item => item.id === shopId) as Shop
-            }
-            if (!prices.find(item => item.shop.id === shopId)) {
-                setPrices([newPrice, ...prices]);
-            }
-            setPrice("");
-            setShopId("");
-            setOpen(false);
+            addForm
+                .validateFields()
+                .then((values: any) => {
+                    addForm.resetFields();
+                    const newPrice: Price = {
+                        price: values.price,
+                        rate: 0,
+                        shop: shops.find(item => item.id === values.shop) as Shop
+                    }
+                    if (!prices.find(item => item.shop.id === values.shop)) {
+                        setPrices([newPrice, ...prices]);
+                    }
+                    setOpen(false);
+                })
+                .catch((info) => {
+                    console.log('Validate failed: ', info);
+                })
         }
-    }
-
-    const handleEditItem = (id: string) => {
-        if (edit) {
-            setSelected(id);
-        };
-    }
-
-    const handleUpdateItem = () => {
-        if (edit) {
-            const newPrices = prices.map(item => {
-                if (item.shop.id === selected) item.price = +price;
-                return item;
-            })
-            setPrices(newPrices);
-            setSelected("");
-        }
-    }
+    };
 
     const handleDeleteItem = (id: string) => {
         if (edit) {
             setPrices(prices.filter(item => item.shop.id !== id));
         }
-    }
+    };
 
-    const handleChangeCategory = (e: SelectChangeEvent<typeof catSelect>) => {
-        const {
-            target: { value },
-        } = e;
-        setCatSelect(
-            typeof value === 'string' ? value.split(',') : value,
-        );
+    const handleEditItem = (id: string) => {
+        if (edit) {
+            editForm.setFieldsValue({
+                price: prices.find(item => item.shop.id === id)?.price
+            })
+            setSelected(id);
+        };
+    };
+
+    const handleUpdateItem = () => {
+        if (edit) {
+            editForm
+                .validateFields()
+                .then((values: any) => {
+                    editForm.resetFields();
+                    const newPrices = prices.map(item => {
+                        if (item.shop.id === selected) item.price = values.price;
+                        return item;
+                    })
+                    setPrices(newPrices);
+                    setSelected("");
+                })
+                .catch((info) => {
+                    console.log('Validate failed: ', info);
+                })
+        }
+    };
+
+    // Edit Product:
+    const [editInfoForm] = Form.useForm();
+
+    const handleEditInfo = () => {
+        const options = product?.categories.map(item => ({ value: item.id, label: item.name }))
+        editInfoForm.setFieldsValue({
+            name: product?.name,
+            description: product?.description,
+            imageUrl: product?.imageUrl,
+            categories: options,
+        });
+        setInfoEdit(true);
+    };
+
+    const handleUpdateInfo = () => {
+        if (edit) {
+            editInfoForm
+                .validateFields()
+                .then((values: any) => {
+                    editInfoForm.resetFields();
+                    const newPro: NewProduct = {
+                        name: values.name,
+                        description: values.description,
+                        imageUrl: values.imageUrl,
+                        categories: typeof values.categories[0] === "object"
+                            ? values.categories.map((item: any) => item.value)
+                            : values.categories
+                    }
+                    setInfo(newPro);
+                    setInfoEdit(false);
+                })
+                .catch((info) => {
+                    console.log('Validate failed: ', info);
+                })
+        }
     };
 
     const handleUpdateProduct = () => {
         const newProduct = {
-            name: name || product?.name,
-            description: description || product?.description,
-            imageUrl: image || product?.imageUrl,
-            categories: catSelect.length !== 0 ? catSelect : product?.categories.map(item => item.id),
+            ...info,
             prices: prices.map((item: Price) => ({
                 shop: item.shop.id,
-                price: item.price,
-            }))
-        };
+                price: +item.price,
+            })),
+        }
         axiosInstance.put(`item/${product?.id}`, newProduct)
             .then(res => {
                 setProduct(res.data.data);
                 setPrices(res.data.data.prices);
             });
         setEdit(false);
-    }
+    };
+
+    const showConfirmDeleteProduct = () => {
+        confirm({
+            content: "これらのアイテムを削除しますか?",
+            okText: "同意",
+            cancelText: "キャンセル",
+            onOk() {
+                axiosInstance.delete(`item/${params.product_id}`);
+                navigate(ConstanthPathEnum.ADMIN_PRODUCT);
+            }
+        })
+    };
 
     return (
         <Container maxWidth="lg">
-            <Box sx={{ padding: '50px' }}>
+            <Box sx={{ paddingTop: '50px' }}>
                 <Typography
                     variant="h5"
                     component="div"
@@ -142,82 +195,117 @@ function AdminProductDetail() {
                 </Typography>
                 <Box sx={{ display: 'flex' }}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', flex: '1' }}>
-                        <img src={image || product?.imageUrl} style={{ height: '250px', width: '250px' }} />
+                        <img src={info?.imageUrl} style={{ height: '250px', width: '250px' }} />
                         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                             <Typography
                                 variant="h6"
                                 component="div"
                                 sx={{ display: 'flex', justifyContent: 'flex-start' }}
                             >
-                                {!edit ? product?.name : (
-                                    <TextField
-                                        color="secondary"
-                                        value={name}
-                                        fullWidth
-                                        variant="standard"
-                                        onChange={e => setName(e.target.value)}
-                                        placeholder={product?.name}
-                                    />
-                                )}
+                                {info?.name}
                             </Typography>
-                            {!edit ? (
-                                <Box sx={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
-                                    {product?.categories.map((cat: Category) => (
-                                        <Typography
-                                            variant="subtitle1"
-                                            component="div"
-                                            key={cat.id}
-                                            sx={{ backgroundColor: "#e0e0e0", padding: "2px 10px", borderRadius: "20px" }}
-                                        >
-                                            {cat.name}
-                                        </Typography>
-                                    ))}
-                                </Box>
-                            ) : (
-                                <FormControl variant="standard" sx={{ width: "350px" }} color="secondary">
-                                    <InputLabel>カテゴリー</InputLabel>
-                                    <Select
-                                        multiple
-                                        value={catSelect}
-                                        onChange={handleChangeCategory}
+                            <Box sx={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+                                {product?.categories.map((cat: Category) => (
+                                    <Typography
+                                        variant="subtitle1"
+                                        component="div"
+                                        key={cat.id}
+                                        sx={{ backgroundColor: "#e0e0e0", padding: "2px 10px", borderRadius: "20px" }}
                                     >
-                                        <MenuItem value=""></MenuItem>
-                                        {categories.map((item: Category) => (
-                                            <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            )}
+                                        {cat.name}
+                                    </Typography>
+                                ))}
+                            </Box>
                             <Typography
                                 variant="subtitle1"
                                 component="div"
                                 sx={{ display: 'flex', justifyContent: 'flex-start' }}
                             >
-                                {!edit ? product?.description : (
-                                    <TextField
-                                        color="secondary"
-                                        value={description}
-                                        fullWidth
-                                        variant="standard"
-                                        onChange={e => setDescription(e.target.value)}
-                                        placeholder={product?.description}
-                                    />
-                                )}
+                                {info?.description}
                             </Typography>
-                            {edit && <Typography
-                                variant="subtitle1"
-                                component="div"
-                                sx={{ display: 'flex', justifyContent: 'flex-start' }}
+                            {edit &&
+                                <Box sx={{ padding: '20px 0' }}>
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        onClick={handleEditInfo}
+                                    >
+                                        編集情報
+                                    </Button>
+                                </Box>
+                            }
+                            <Modal
+                                title="アイテム情報の編集"
+                                open={infoEdit}
+                                okText="編集"
+                                cancelText="キャンセル"
+                                onCancel={() => setInfoEdit(false)}
+                                onOk={handleUpdateInfo}
                             >
-                                <TextField
-                                    color="secondary"
-                                    value={image}
-                                    fullWidth
-                                    variant="standard"
-                                    onChange={e => setImage(e.target.value)}
-                                    placeholder={product?.imageUrl}
-                                />
-                            </Typography>}
+                                <Form
+                                    form={editInfoForm}
+                                    layout="vertical"
+                                    name="edit_info_form"
+                                >
+                                    <Form.Item
+                                        name="name"
+                                        label="名前"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: "このフィールドに入力してください。"
+                                            }
+                                        ]}
+                                    >
+                                        <Input />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name="description"
+                                        label="説明"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: "このフィールドに入力してください。"
+                                            }
+                                        ]}
+                                    >
+                                        <Input />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name="categories"
+                                        label="カテゴリー"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: "このフィールドに入力してください。"
+                                            }
+                                        ]}
+                                    >
+                                        <Select
+                                            mode="multiple"
+                                            allowClear
+                                        >
+                                            {categories.map((item: any) => (
+                                                <Select.Option key={item.value} value={item.value}>
+                                                    {item.label}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                    </Form.Item>
+                                    <Form.Item
+                                        name="imageUrl"
+                                        label="写真リンク"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: "このフィールドに入力してください。"
+                                            }
+                                        ]}
+                                    >
+                                        <Input />
+                                    </Form.Item>
+                                </Form>
+                            </Modal>
                         </Box>
                     </Box>
                     <Box sx={{ flex: '2', display: 'flex', flexDirection: 'column' }}>
@@ -227,27 +315,27 @@ function AdminProductDetail() {
                                 color: '#333',
                                 fontSize: '18px',
                                 borderBottom: '1px solid #333',
-                                padding: '20px 50px',
+                                padding: '20px',
                             }}
                         >
                             <Typography
                                 variant="subtitle1"
                                 component="div"
-                                sx={{ display: 'flex', justifyContent: 'flex-start', width: '50%' }}
+                                sx={{ display: 'flex', justifyContent: 'flex-start', width: '40%' }}
                             >
                                 売り場
                             </Typography>
                             <Typography
                                 variant="subtitle1"
                                 component="div"
-                                sx={{ display: 'flex', justifyContent: 'flex-start', width: '20%' }}
+                                sx={{ display: 'flex', justifyContent: 'flex-start', width: '25%' }}
                             >
                                 値段
                             </Typography>
                             <Typography
                                 variant="subtitle1"
                                 component="div"
-                                sx={{ display: 'flex', justifyContent: 'flex-start', width: '20%' }}
+                                sx={{ display: 'flex', justifyContent: 'flex-start', width: '25' }}
                             >
                                 レート
                             </Typography>
@@ -261,35 +349,39 @@ function AdminProductDetail() {
                                     color: '#333',
                                     fontSize: '18px',
                                     borderBottom: '1px solid #333',
-                                    padding: '20px 50px',
+                                    padding: '20px',
                                     "&:hover": { backgroundColor: '#e0e0e0' }
                                 }}
-                                onClick={() => handleEditItem(item.shop.id)}
                             >
                                 <Typography
                                     variant="subtitle1"
                                     component="div"
-                                    sx={{ display: 'flex', justifyContent: 'flex-start', width: '50%' }}
+                                    sx={{ display: 'flex', justifyContent: 'flex-start', width: '40%' }}
                                 >
                                     {item.shop.name}
                                 </Typography>
                                 <Typography
                                     variant="subtitle1"
                                     component="div"
-                                    sx={{ display: 'flex', justifyContent: 'flex-start', width: '20%' }}
+                                    sx={{ display: 'flex', justifyContent: 'flex-start', width: '25%' }}
                                 >
                                     {item.price}
                                 </Typography>
                                 <Typography
                                     variant="subtitle1"
                                     component="div"
-                                    sx={{ display: 'flex', justifyContent: 'flex-start', width: '20%' }}
+                                    sx={{ display: 'flex', justifyContent: 'flex-start', width: '25%' }}
                                 >
-                                    <Rating defaultValue={item.rate} precision={0.5} readOnly />
+                                    <Rating value={item.rate} precision={0.5} readOnly />
                                 </Typography>
-                                {edit && <Box sx={{ marginLeft: '5%', color: 'red', cursor: 'pointer' }} onClick={() => handleDeleteItem(item.shop.id)}>
-                                    <HighlightOffIcon />
-                                </Box>}
+                                <Box sx={{ color: 'red', display: 'flex', gap: '5px' }}>
+                                    {edit &&
+                                        <>
+                                            <BuildCircleIcon onClick={() => handleEditItem(item.shop.id)} sx={{ cursor: "pointer" }} />
+                                            <HighlightOffIcon onClick={() => handleDeleteItem(item.shop.id)} sx={{ cursor: "pointer" }} />
+                                        </>
+                                    }
+                                </Box>
                             </Box>
                         ))}
                         {edit &&
@@ -298,68 +390,86 @@ function AdminProductDetail() {
                                     <Button
                                         variant="contained"
                                         color="secondary"
-                                        onClick={handleOpen}
+                                        onClick={() => setOpen(true)}
                                         startIcon={<AddIcon />}
                                     >
                                         追加
                                     </Button>
                                 </Box>
-                                <Dialog
+                                <Modal
+                                    title="新しいアイテム"
                                     open={open}
-                                    fullWidth
-                                    maxWidth="sm"
-                                    onClose={handleClose}
+                                    okText="追加"
+                                    cancelText="キャンセル"
+                                    onCancel={() => setOpen(false)}
+                                    onOk={handleAddItem}
                                 >
-                                    <DialogTitle>新しいアイテム</DialogTitle>
-                                    <DialogContent>
-                                        <FormControl variant="standard" fullWidth color="secondary">
-                                            <InputLabel>売り場</InputLabel>
+                                    <Form
+                                        form={addForm}
+                                        layout="vertical"
+                                        name="add_form"
+                                    >
+                                        <Form.Item
+                                            name="shop"
+                                            label="売り場"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: "このフィールドに入力してください。"
+                                                }
+                                            ]}
+                                        >
                                             <Select
-                                                value={shopId}
-                                                onChange={handleChangeShop}
+                                                allowClear
                                             >
-                                                <MenuItem value=""></MenuItem>
                                                 {shops.map((item: Shop) => (
-                                                    <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
+                                                    <Select.Option key={item.id} value={item.id}>
+                                                        {item.name}
+                                                    </Select.Option>
                                                 ))}
                                             </Select>
-                                        </FormControl>
-                                        <TextField
-                                            color="secondary"
-                                            value={price}
+                                        </Form.Item>
+                                        <Form.Item
+                                            name="price"
                                             label="値段"
-                                            fullWidth
-                                            variant="standard"
-                                            onChange={e => setPrice(e.target.value)}
-                                        />
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <Button variant="contained" color="secondary" onClick={handleAddItem}>追加</Button>
-                                        <Button variant="contained" color="secondary" onClick={handleClose}>キャンセル</Button>
-                                    </DialogActions>
-                                </Dialog>
-                                <Dialog
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: "このフィールドに入力してください。"
+                                                }
+                                            ]}
+                                        >
+                                            <Input type="number" />
+                                        </Form.Item>
+                                    </Form>
+                                </Modal>
+                                <Modal
+                                    title={prices.find(item => item.shop.id === selected)?.shop.name}
                                     open={!!selected}
-                                    fullWidth
-                                    maxWidth="sm"
-                                    onClose={handleClose}
+                                    okText="編集"
+                                    cancelText="キャンセル"
+                                    onCancel={() => setSelected("")}
+                                    onOk={handleUpdateItem}
                                 >
-                                    <DialogTitle>{prices.find(item => item.shop.id === selected)?.shop.name}</DialogTitle>
-                                    <DialogContent>
-                                        <TextField
-                                            color="secondary"
-                                            value={price}
-                                            fullWidth
-                                            variant="standard"
-                                            onChange={e => setPrice(e.target.value)}
-                                            placeholder={prices.find(item => item.shop.id === selected)?.price.toString()}
-                                        />
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <Button variant="contained" color="secondary" onClick={handleUpdateItem}>追加</Button>
-                                        <Button variant="contained" color="secondary" onClick={handleClose}>キャンセル</Button>
-                                    </DialogActions>
-                                </Dialog>
+                                    <Form
+                                        form={editForm}
+                                        layout="vertical"
+                                        name="edit_form"
+                                    >
+                                        <Form.Item
+                                            name="price"
+                                            label="値段"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: "このフィールドに入力してください。"
+                                                }
+                                            ]}
+                                        >
+                                            <Input type="number" />
+                                        </Form.Item>
+                                    </Form>
+                                </Modal>
                             </>
                         }
                     </Box>
@@ -370,7 +480,7 @@ function AdminProductDetail() {
                             <Button
                                 variant="contained"
                                 color="secondary"
-                                onClick={() => handleEdit()}
+                                onClick={() => setEdit(true)}
                                 startIcon={<EditIcon />}
                             >
                                 編集
@@ -378,7 +488,7 @@ function AdminProductDetail() {
                             <Button
                                 variant="contained"
                                 color="secondary"
-                                // onClick={() => handleDelete(shop.id)}
+                                onClick={() => showConfirmDeleteProduct()}
                                 startIcon={<DeleteIcon />}
                             >
                                 消去
@@ -387,7 +497,7 @@ function AdminProductDetail() {
                     ) : (
                         <>
                             <Button variant="contained" color="secondary" onClick={handleUpdateProduct}>編集</Button>
-                            <Button variant="contained" color="secondary" onClick={handleCancel}>キャンセル</Button>
+                            <Button variant="contained" color="secondary" onClick={() => setEdit(false)}>キャンセル</Button>
                         </>
                     )}
                 </Box>
