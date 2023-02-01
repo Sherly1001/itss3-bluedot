@@ -31,6 +31,7 @@ function Header() {
     const handleSignOut = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("username");
+        localStorage.removeItem("useremail");
         localStorage.removeItem("isAdmin");
         setAnchorEl(null);
         navigate(ConstanthPathEnum.HOME_PAGE);
