@@ -2,7 +2,7 @@ import { Box, Button, Container, Rating, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../requests/axiosInstance";
-import { Price, Product } from "../../type/product";
+import { Price } from "../../type/product";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Category } from "../../type/category";
@@ -24,7 +24,6 @@ interface Info {
 
 function AdminProductDetail() {
     const [open, setOpen] = useState<boolean>(false);
-    // const [product, setProduct] = useState<Product>();
     const [prices, setPrices] = useState<Price[]>([]);
     const [edit, setEdit] = useState<boolean>(false);
     const [shops, setShops] = useState<Shop[]>([]);
@@ -37,32 +36,37 @@ function AdminProductDetail() {
     const params = useParams();
     const navigate = useNavigate();
 
+    const fetchData = async () => {
+        const res = await axiosInstance.get(`item/${params.product_id}?page=1`)
+        const resData = res.data.data.items[0];
+        setPrices(resData.prices);
+        setInfo({
+            name: resData.name,
+            description: resData.description,
+            imageUrl: resData.imageUrl,
+            categories: resData.categories.map((item: Category) => item.id)
+        });
+        setCatList(resData.categories.map((item: Category) => ({
+            value: item.id,
+            label: item.name
+        })))
+        const res1 = await axiosInstance.get('shop');
+        setShops(res1.data.data);
+        const res2 = await axiosInstance.get('category');
+        setCategories(res2.data.data.map((item: Category) => ({
+            value: item.id,
+            label: item.name,
+        })));
+    }
+
     useEffect(() => {
-        const fetchData = async () => {
-            const res = await axiosInstance.get(`item/${params.product_id}?page=1`)
-            // setProduct(res.data.data.items[0]);
-            const resData = res.data.data.items[0];
-            setPrices(resData.prices);
-            setInfo({
-                name: resData.name,
-                description: resData.description,
-                imageUrl: resData.imageUrl,
-                categories: resData.categories.map((item: Category) => item.id)
-            });
-            setCatList(resData.categories.map((item: Category) => ({
-                value: item.id, 
-                label: item.name
-            })))
-            const res1 = await axiosInstance.get('shop');
-            setShops(res1.data.data);
-            const res2 = await axiosInstance.get('category');
-            setCategories(res2.data.data.map((item: Category) => ({
-                value: item.id,
-                label: item.name,
-            })));
-        }
         fetchData();
     }, []);
+
+    const handleCancel = () => {
+        fetchData();
+        setEdit(false);
+    }
 
     // Edit Price:
     const [addForm] = Form.useForm();
@@ -128,7 +132,6 @@ function AdminProductDetail() {
     const [editInfoForm] = Form.useForm();
 
     const handleEditInfo = () => {
-        //const options = catList.map(item => ({ value: item.id, label: item.name }))
         editInfoForm.setFieldsValue({
             name: info?.name,
             description: info?.description,
@@ -153,7 +156,7 @@ function AdminProductDetail() {
                             : values.categories
                     };
                     setCatList(categories.filter((cat: any) => {
-                        return newInfo.categories.find(item  => item === cat.value);
+                        return newInfo.categories.find(item => item === cat.value);
                     }));
                     setInfo(newInfo);
                     setInfoEdit(false);
@@ -174,9 +177,8 @@ function AdminProductDetail() {
         }
         axiosInstance.put(`item/${params.product_id}`, newProduct)
             .then(res => {
-                // setProduct(res.data.data);
                 setCatList(categories.filter((cat: any) => {
-                    return info?.categories.find(item  => item === cat.value);
+                    return info?.categories.find(item => item === cat.value);
                 }))
                 setPrices(res.data.data.prices);
             });
@@ -509,7 +511,7 @@ function AdminProductDetail() {
                     ) : (
                         <>
                             <Button variant="contained" color="secondary" onClick={handleUpdateProduct}>編集</Button>
-                            <Button variant="contained" color="secondary" onClick={() => setEdit(false)}>キャンセル</Button>
+                            <Button variant="contained" color="secondary" onClick={handleCancel}>キャンセル</Button>
                         </>
                     )}
                 </Box>
