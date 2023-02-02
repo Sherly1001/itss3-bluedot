@@ -15,7 +15,7 @@ import { ConstanthPathEnum } from "../../constanth/constanth.path";
 
 const { confirm } = Modal;
 
-interface NewProduct {
+interface Info {
     name: string;
     description: string;
     imageUrl: string;
@@ -24,14 +24,15 @@ interface NewProduct {
 
 function AdminProductDetail() {
     const [open, setOpen] = useState<boolean>(false);
-    const [product, setProduct] = useState<Product>();
+    // const [product, setProduct] = useState<Product>();
     const [prices, setPrices] = useState<Price[]>([]);
     const [edit, setEdit] = useState<boolean>(false);
     const [shops, setShops] = useState<Shop[]>([]);
     const [categories, setCategories] = useState([]);
+    const [catList, setCatList] = useState([]);
     const [selected, setSelected] = useState<string>("");
     const [infoEdit, setInfoEdit] = useState<boolean>(false);
-    const [info, setInfo] = useState<NewProduct>();
+    const [info, setInfo] = useState<Info>();
 
     const params = useParams();
     const navigate = useNavigate();
@@ -39,14 +40,19 @@ function AdminProductDetail() {
     useEffect(() => {
         const fetchData = async () => {
             const res = await axiosInstance.get(`item/${params.product_id}?page=1`)
-            setProduct(res.data.data.items[0]);
-            setPrices(res.data.data.items[0].prices);
+            // setProduct(res.data.data.items[0]);
+            const resData = res.data.data.items[0];
+            setPrices(resData.prices);
             setInfo({
-                name: res.data.data.items[0].name,
-                description: res.data.data.items[0].description,
-                imageUrl: res.data.data.items[0].imageUrl,
-                categories: res.data.data.items[0].categories.map((item: Category) => item.id)
+                name: resData.name,
+                description: resData.description,
+                imageUrl: resData.imageUrl,
+                categories: resData.categories.map((item: Category) => item.id)
             });
+            setCatList(resData.categories.map((item: Category) => ({
+                value: item.id, 
+                label: item.name
+            })))
             const res1 = await axiosInstance.get('shop');
             setShops(res1.data.data);
             const res2 = await axiosInstance.get('category');
@@ -70,7 +76,7 @@ function AdminProductDetail() {
                     addForm.resetFields();
                     const newPrice: Price = {
                         price: values.price,
-                        rate: 0,
+                        rate: 5,
                         shop: shops.find(item => item.id === values.shop) as Shop
                     }
                     if (!prices.find(item => item.shop.id === values.shop)) {
@@ -122,12 +128,12 @@ function AdminProductDetail() {
     const [editInfoForm] = Form.useForm();
 
     const handleEditInfo = () => {
-        const options = product?.categories.map(item => ({ value: item.id, label: item.name }))
+        //const options = catList.map(item => ({ value: item.id, label: item.name }))
         editInfoForm.setFieldsValue({
-            name: product?.name,
-            description: product?.description,
-            imageUrl: product?.imageUrl,
-            categories: options,
+            name: info?.name,
+            description: info?.description,
+            imageUrl: info?.imageUrl,
+            categories: catList,
         });
         setInfoEdit(true);
     };
@@ -138,15 +144,18 @@ function AdminProductDetail() {
                 .validateFields()
                 .then((values: any) => {
                     editInfoForm.resetFields();
-                    const newPro: NewProduct = {
+                    const newInfo: Info = {
                         name: values.name,
                         description: values.description,
                         imageUrl: values.imageUrl,
                         categories: typeof values.categories[0] === "object"
                             ? values.categories.map((item: any) => item.value)
                             : values.categories
-                    }
-                    setInfo(newPro);
+                    };
+                    setCatList(categories.filter((cat: any) => {
+                        return newInfo.categories.find(item  => item === cat.value);
+                    }));
+                    setInfo(newInfo);
                     setInfoEdit(false);
                 })
                 .catch((info) => {
@@ -163,9 +172,12 @@ function AdminProductDetail() {
                 price: +item.price,
             })),
         }
-        axiosInstance.put(`item/${product?.id}`, newProduct)
+        axiosInstance.put(`item/${params.product_id}`, newProduct)
             .then(res => {
-                setProduct(res.data.data);
+                // setProduct(res.data.data);
+                setCatList(categories.filter((cat: any) => {
+                    return info?.categories.find(item  => item === cat.value);
+                }))
                 setPrices(res.data.data.prices);
             });
         setEdit(false);
@@ -205,14 +217,14 @@ function AdminProductDetail() {
                                 {info?.name}
                             </Typography>
                             <Box sx={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
-                                {product?.categories.map((cat: Category) => (
+                                {catList.map((cat: any) => (
                                     <Typography
                                         variant="subtitle1"
                                         component="div"
-                                        key={cat.id}
+                                        key={cat.value}
                                         sx={{ backgroundColor: "#e0e0e0", padding: "2px 10px", borderRadius: "20px" }}
                                     >
-                                        {cat.name}
+                                        {cat.label}
                                     </Typography>
                                 ))}
                             </Box>
