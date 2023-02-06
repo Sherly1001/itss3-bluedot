@@ -10,7 +10,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { BaseResult } from 'src/domain/dtos/base.result';
-import { User, UserDocument } from 'src/domain/schemas';
+import { Shop, ShopDocument, User, UserDocument } from 'src/domain/schemas';
 import { LoginUserDto, UpdateUserDto, UserDto } from './dtos';
 
 @Injectable()
@@ -19,6 +19,8 @@ export class UserService {
     private readonly jwtService: JwtService,
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
+    @InjectModel(Shop.name)
+    private readonly shopModel: Model<ShopDocument>,
   ) {}
 
   async getUser(id: string) {
@@ -76,6 +78,8 @@ export class UserService {
 
     try {
       delete payload.isAdmin;
+      delete payload.adminOfShop;
+
       result.data = await this.userModel.findOneAndUpdate(
         { _id: id },
         payload,
@@ -98,6 +102,27 @@ export class UserService {
     return result;
   }
 
+  async setAdminToShop(email: string, shopId: string | null) {
+    const result = new BaseResult<User>();
+
+    try {
+      const user = await this.userModel.findOne({ email });
+      if (!user) {
+        throw new NotFoundException('user not found');
+      }
+
+      const shop = await this.shopModel.findById(shopId);
+      user.adminOfShop = shop;
+      await user.save();
+
+      result.data = user;
+    } catch (err) {
+      throw new InternalServerErrorException(err.toString());
+    }
+
+    return result;
+  }
+
   async loginUser(user: LoginUserDto) {
     const result = new BaseResult();
     const res = await this.validateUser(user.email, user.password);
@@ -111,7 +136,7 @@ export class UserService {
 
   async validateUser(email: string, password: string) {
     const user = await this.userModel.findOne({ email });
-    if (user && await bcrypt.compare(password, user.hashPassword)) {
+    if (user && (await bcrypt.compare(password, user.hashPassword))) {
       return user;
     }
     return null;
