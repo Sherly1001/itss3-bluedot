@@ -5,6 +5,7 @@ import { DelivererModule } from './deliverer/deliverer.module';
 import { ItemModule } from './item/item.module';
 import { ShopModule } from './shop/shop.module';
 import { UserModule } from './user/user.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UserModule } from './user/user.module';
     ItemModule,
     CommentModule,
     DelivererModule,
+    ChatModule,
   ],
 })
 export class ApiModule {}

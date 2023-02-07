@@ -8,6 +8,7 @@ export type UserDocument = HydratedDocument<User>;
 @Schema({
   toJSON: {
     transform: function (_doc, ret, _options) {
+      ret.id = ret._id;
       delete ret.hashPassword;
       delete ret._id;
       delete ret.__v;

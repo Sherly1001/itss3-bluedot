@@ -1,12 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BasePagging } from 'src/domain/dtos/pagging';
 
-export class GetItemsDto {
-  @ApiProperty({ required: false, default: 20 })
-  limit?: number = 20;
-
-  @ApiProperty({ required: false, default: 1 })
-  page?: number = 1;
-
+export class GetItemsDto extends BasePagging {
   @ApiProperty({ required: false })
   name?: string;
 

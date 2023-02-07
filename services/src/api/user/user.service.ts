@@ -147,4 +147,14 @@ export class UserService {
       access_token: this.jwtService.sign({ sub: user._id, email: user.email }),
     };
   }
+
+  async validateToken(token: string) {
+    const claim = this.jwtService.verify(token);
+    const user = await this.userModel.findOne({
+      _id: claim.sub,
+      email: claim.email,
+    });
+
+    return user;
+  }
 }

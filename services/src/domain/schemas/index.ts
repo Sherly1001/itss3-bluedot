@@ -4,3 +4,4 @@ export * from './item.schema';
 export * from './category.schema';
 export * from './deliverer.schema';
 export * from './comment.schema';
+export * from './chat.schema';
