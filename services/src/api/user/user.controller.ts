@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Post,
   Put,
   Req,
@@ -20,7 +21,9 @@ import {
 import { BaseResult } from 'src/domain/dtos/base.result';
 import { User } from 'src/domain/schemas';
 import { HttpExceptionFilter } from 'src/filters';
+import { AdminGuard } from './admin.auth.guard';
 import { LoginUserDto, UpdateUserDto, UserDto } from './dtos';
+import { ShopAdmin } from './dtos/shopadmin.dto';
 import { JwtAuthGuard } from './jwt.auth.guard';
 import { UserService } from './user.service';
 
@@ -44,6 +47,20 @@ export class UserController {
   @Get()
   async getUser(@Res() res, @Req() req) {
     const result = await this.userService.getUser(req.user.userId);
+    return res.json(result);
+  }
+
+  @ApiOkResponse({
+    schema: {
+      $ref: getSchemaPath(BaseResult),
+      properties: {
+        data: { $ref: getSchemaPath(User) },
+      },
+    },
+  })
+  @Get(':id')
+  async getUserById(@Res() res, @Req() req, @Param('id') id: string) {
+    const result = await this.userService.getUser(id);
     return res.json(result);
   }
 
@@ -90,6 +107,25 @@ export class UserController {
   })
   async deleteUser(@Res() res, @Req() req) {
     const result = await this.userService.deleteUser(req.user.userId);
+    return res.json(result);
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @ApiBearerAuth()
+  @Post('setShopAdmin')
+  @ApiOkResponse({
+    schema: {
+      $ref: getSchemaPath(BaseResult),
+      properties: {
+        data: { $ref: getSchemaPath(User) },
+      },
+    },
+  })
+  async setShopAdmin(@Res() res, @Body() body: ShopAdmin) {
+    const result = await this.userService.setAdminToShop(
+      body.email,
+      body.shopId,
+    );
     return res.json(result);
   }
 

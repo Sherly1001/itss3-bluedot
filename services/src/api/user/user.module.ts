@@ -3,7 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
 import { AppConfig, appConfig } from 'src/config';
-import { User, UserSchema } from 'src/domain/schemas';
+import { Shop, ShopSchema, User, UserSchema } from 'src/domain/schemas';
 import { JwtStrategy } from './jwt.strategy';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
@@ -17,7 +17,10 @@ import { UserService } from './user.service';
         secret: cfg.jwt.key,
       }),
     }),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: Shop.name, schema: ShopSchema },
+    ]),
   ],
   controllers: [UserController],
   providers: [UserService, JwtStrategy],
