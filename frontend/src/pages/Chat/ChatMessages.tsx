@@ -5,21 +5,25 @@ import {
   Button,
   CircularProgress,
   Container,
-  IconButton,
   Snackbar,
   TextField,
   Typography,
 } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import io from 'socket.io-client';
 import axiosInstance from '../../requests/axiosInstance';
 import { Chat } from '../../type/chat';
-import io from 'socket.io-client';
 import { Shop } from '../../type/shop';
 import { User } from '../../type/user';
 
 const baseURL = import.meta.env.VITE_BASE_URL;
-const socket = io(baseURL + '?token=' + localStorage.getItem('token'));
+const socket = io(baseURL, {
+  path: (new URL(baseURL).pathname + '/socket.io/').replace('//', '/'),
+  query: {
+    token: localStorage.getItem('token'),
+  },
+});
 
 export function ChatInfo({
   chat,
@@ -223,8 +227,6 @@ export function ChatMessages() {
       chat.from = userInfo;
       chat.toShop = { id: params.to };
     }
-
-    console.log(toUserInfo, shopInfo);
 
     setChats([chat, ...chats]);
 

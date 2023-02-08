@@ -19,6 +19,7 @@ class ClientInfo {
 
 @WebSocketGateway({
   cors: { origin: '*' },
+  namespace: /.*/,
 })
 export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
