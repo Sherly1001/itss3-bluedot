@@ -1,6 +1,6 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model, Types } from 'mongoose';
 import { BaseResult } from 'src/domain/dtos/base.result';
 import { Item, ItemDocument, Shop, ShopDocument } from 'src/domain/schemas';
 import { UpdateShopDto } from './dtos';
@@ -16,7 +16,11 @@ export class ShopService {
     const result = new BaseResult<Shop[]>();
     const filter: FilterQuery<ShopDocument> = {};
     if (search) {
-      filter.name = { $regex: new RegExp(search, 'i') };
+      if (Types.ObjectId.isValid(search)) {
+        filter._id = search;
+      } else {
+        filter.name = { $regex: new RegExp(search, 'i') };
+      }
     }
     result.data = await this.shopModel.find(filter);
     return result;

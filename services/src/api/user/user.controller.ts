@@ -50,6 +50,20 @@ export class UserController {
     return res.json(result);
   }
 
+  @ApiOkResponse({
+    schema: {
+      $ref: getSchemaPath(BaseResult),
+      properties: {
+        data: { $ref: getSchemaPath(User) },
+      },
+    },
+  })
+  @Get(':id')
+  async getUserById(@Res() res, @Req() req, @Param('id') id: string) {
+    const result = await this.userService.getUser(id);
+    return res.json(result);
+  }
+
   @Post()
   @ApiOkResponse({
     schema: {

@@ -67,7 +67,10 @@ export class ChatGateway
     const content = payload?.content;
 
     if (!to || !content) {
-      client.emit('sendErr', 'missing content or receiver');
+      client.emit('sendErr', {
+        raw: payload,
+        err: 'missing content or receiver',
+      });
       return null;
     }
 
@@ -97,7 +100,10 @@ export class ChatGateway
         }
       }
     } catch (err) {
-      client.emit('sendErr', err.toString());
+      client.emit('sendErr', {
+        raw: payload,
+        err: err.toString(),
+      });
     }
   }
 }

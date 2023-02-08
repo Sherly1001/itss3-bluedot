@@ -82,37 +82,36 @@ export class ChatService {
     const objectId = isShop ? user.adminOfShop : user._id;
 
     const match = isShop
-      ? [{ fromShop: objectId }, { toShop: objectId }, '$to', '$from']
-      : [{ from: objectId }, { to: objectId }, '$toShop', '$fromShop'];
+      ? [{ fromShop: objectId }, { toShop: objectId }]
+      : [{ from: objectId }, { to: objectId }];
 
     const pipeline = [
-      { $match: match[0] },
+      { $match: { $or: match } },
       { $sort: { createdAt: -1 } },
       {
-        $group: {
-          _id: match[2],
-          chat: { $first: '$$ROOT' },
-        },
-      },
-      { $project: { _id: 0 } },
-      { $replaceRoot: { newRoot: '$chat' } },
-      {
-        $unionWith: {
-          coll: 'chats',
-          pipeline: [
-            { $match: match[1] },
-            { $sort: { createdAt: -1 } },
-            {
-              $group: {
-                _id: match[3],
-                chat: { $first: '$$ROOT' },
+        $addFields: {
+          conv: {
+            $ifNull: [
+              {
+                $concat: [
+                  { $toString: '$from' },
+                  '-',
+                  { $toString: '$toShop' },
+                ],
               },
-            },
-            { $project: { _id: 0 } },
-            { $replaceRoot: { newRoot: '$chat' } },
-          ],
+              {
+                $concat: [
+                  { $toString: '$to' },
+                  '-',
+                  { $toString: '$fromShop' },
+                ],
+              },
+            ],
+          },
         },
       },
+      { $group: { _id: '$conv', chat: { $first: '$$ROOT' } } },
+      { $replaceRoot: { newRoot: '$chat' } },
       { $sort: { createdAt: -1 } },
     ] as any;
 
@@ -185,6 +184,7 @@ export class ChatService {
 
     const items: any[] = await this.chatModel
       .find(filter)
+      .sort({ createdAt: -1 })
       .limit(limit)
       .skip(skip)
       .populate(['from', 'fromShop', 'to', 'toShop']);
