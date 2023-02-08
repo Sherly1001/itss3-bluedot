@@ -117,6 +117,11 @@ function Header() {
                   onClose={handleClose}
                 >
                   <MenuItem onClick={handleSignOut}>サインアウト</MenuItem>
+                  <MenuItem>
+                    <NavLink to={ConstanthPathEnum.CHAT_INDEX}>
+                      メッセージ
+                    </NavLink>
+                  </MenuItem>
                 </Menu>
               </Box>
             ) : (

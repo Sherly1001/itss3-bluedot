@@ -13,4 +13,6 @@ export enum ConstanthPathEnum {
   ADMIN_CATEGORY = '/admin/categories',
   ADMIN_SHOP = '/admin/shops',
   ADMIN_COMPANY = '/admin/companies',
+  CHAT_INDEX = '/chat',
+  CHAT_MESSAGE = '/chat/:to',
 }

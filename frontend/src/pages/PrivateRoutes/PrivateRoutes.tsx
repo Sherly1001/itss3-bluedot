@@ -7,4 +7,9 @@ function PrivateRoutes() {
   return isAdmin ? <Outlet /> : <Navigate to={ConstanthPathEnum.HOME_PAGE} />;
 }
 
+export function LoggedInRoutes() {
+  const token = localStorage.getItem('token');
+  return token ? <Outlet /> : <Navigate to={ConstanthPathEnum.HOME_PAGE} />;
+}
+
 export default PrivateRoutes;
