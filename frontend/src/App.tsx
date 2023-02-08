@@ -4,7 +4,7 @@ import HomePage from './pages/HomePage/HomePage';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import SignIn from './pages/SignIn/SignIn';
 import SignUp from './pages/SignUp/SignUp';
-import { ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider } from '@mui/material/styles';
 import { myTheme } from './styles/myTheme';
 import { ConstanthPathEnum } from './constanth/constanth.path';
 import ProductShop from './pages/Products/ProductShop/ProductShop';
@@ -27,21 +27,58 @@ function App() {
         <div className="App">
           <Header />
           <Routes>
-            <Route path={ConstanthPathEnum.HOME_PAGE} element={<HomePage />} index />
-            <Route path={ConstanthPathEnum.PRODUCT_CATEGORY} element={<Products />} />
-            <Route path={ConstanthPathEnum.PRODUCT_SEARCH} element={<Products />} />
-            <Route path={ConstanthPathEnum.PRODUCT_SHOP} element={<ProductShop />} />
-            <Route path={ConstanthPathEnum.PRODUCT_DETAIL} element={<ProductDetail />} />
-            <Route path={ConstanthPathEnum.COMPANY_LIST} element={<Companies />} />
+            <Route
+              path={ConstanthPathEnum.HOME_PAGE}
+              element={<HomePage />}
+              index
+            />
+            <Route
+              path={ConstanthPathEnum.PRODUCT_CATEGORY}
+              element={<Products />}
+            />
+            <Route
+              path={ConstanthPathEnum.PRODUCT_SEARCH}
+              element={<Products />}
+            />
+            <Route
+              path={ConstanthPathEnum.PRODUCT_SHOP}
+              element={<ProductShop />}
+            />
+            <Route
+              path={ConstanthPathEnum.PRODUCT_DETAIL}
+              element={<ProductDetail />}
+            />
+            <Route
+              path={ConstanthPathEnum.COMPANY_LIST}
+              element={<Companies />}
+            />
             <Route path={ConstanthPathEnum.SIGN_IN} element={<SignIn />} />
             <Route path={ConstanthPathEnum.SIGN_UP} element={<SignUp />} />
             <Route element={<PrivateRoutes />}>
-              <Route path={ConstanthPathEnum.ADMIN_PRODUCT} element={<AdminProducts />} />
-              <Route path={ConstanthPathEnum.ADMIN_PRODUCT_ADD} element={<ProductAdd />} />
-              <Route path={ConstanthPathEnum.ADMIN_PRODUCT_DETAIL} element={<AdminProductDetail />} />
-              <Route path={ConstanthPathEnum.ADMIN_SHOP} element={<AdminShops />} />
-              <Route path={ConstanthPathEnum.ADMIN_CATEGORY} element={<AdminCategories />} />
-              <Route path={ConstanthPathEnum.ADMIN_COMPANY} element={<AdminCompanies />} />
+              <Route
+                path={ConstanthPathEnum.ADMIN_PRODUCT}
+                element={<AdminProducts />}
+              />
+              <Route
+                path={ConstanthPathEnum.ADMIN_PRODUCT_ADD}
+                element={<ProductAdd />}
+              />
+              <Route
+                path={ConstanthPathEnum.ADMIN_PRODUCT_DETAIL}
+                element={<AdminProductDetail />}
+              />
+              <Route
+                path={ConstanthPathEnum.ADMIN_SHOP}
+                element={<AdminShops />}
+              />
+              <Route
+                path={ConstanthPathEnum.ADMIN_CATEGORY}
+                element={<AdminCategories />}
+              />
+              <Route
+                path={ConstanthPathEnum.ADMIN_COMPANY}
+                element={<AdminCompanies />}
+              />
             </Route>
           </Routes>
           {/* <Footer /> */}

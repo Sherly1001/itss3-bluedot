@@ -1,11 +1,10 @@
-import { ConstanthPathEnum } from "../../constanth/constanth.path";
-import { Navigate, Outlet } from "react-router-dom";
+import { ConstanthPathEnum } from '../../constanth/constanth.path';
+import { Navigate, Outlet } from 'react-router-dom';
 
 function PrivateRoutes() {
+  const isAdmin = localStorage.getItem('isAdmin');
 
-    const isAdmin = localStorage.getItem('isAdmin');
-
-    return isAdmin ? <Outlet /> : <Navigate to={ConstanthPathEnum.HOME_PAGE} />
-};
+  return isAdmin ? <Outlet /> : <Navigate to={ConstanthPathEnum.HOME_PAGE} />;
+}
 
 export default PrivateRoutes;
