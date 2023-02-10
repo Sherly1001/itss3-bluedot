@@ -35,10 +35,11 @@ export function ChatInfo({
     <Box
       sx={{
         display: 'flex',
-        margin: '.5em',
+        margin: '.2em .5em',
         padding: '.5em',
         border: '1px solid #f0f0f0',
         borderRadius: '.3em',
+        background: chat.fromShop ? '#ffdbdb' : '#daf3e9',
       }}
     >
       <Box sx={{ margin: '.5em' }}>
