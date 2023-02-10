@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Header from './components/Header/Header';
 import { ConstanthPathEnum } from './constanth/constanth.path';
@@ -25,7 +25,7 @@ import { myTheme } from './styles/myTheme';
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <ThemeProvider theme={myTheme}>
         <div className="App">
           <Header />
@@ -97,7 +97,7 @@ function App() {
           {/* <Footer /> */}
         </div>
       </ThemeProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
