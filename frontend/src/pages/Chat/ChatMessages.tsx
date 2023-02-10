@@ -11,19 +11,11 @@ import {
 } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import io from 'socket.io-client';
+import useSocket from '../../hooks/useSocket';
 import axiosInstance from '../../requests/axiosInstance';
 import { Chat } from '../../type/chat';
 import { Shop } from '../../type/shop';
 import { User } from '../../type/user';
-
-const baseURL = import.meta.env.VITE_BASE_URL;
-const socket = io(baseURL, {
-  path: (new URL(baseURL).pathname + '/socket.io/').replace('//', '/'),
-  query: {
-    token: localStorage.getItem('token'),
-  },
-});
 
 export function ChatInfo({
   chat,
@@ -53,9 +45,17 @@ export function ChatInfo({
         <Avatar src={avt} />
       </Box>
       <Box sx={{ flexGrow: '1' }}>
-        <Typography sx={{ color: 'rgba(0, 0, 0, 0.8)' }}>{name}</Typography>
+        <Typography sx={{ color: 'rgba(0, 0, 0, 0.8)' }}>
+          {name}
+          <Typography
+            component="span"
+            sx={{ color: 'rgba(0, 0, 0, 0.65)', fontSize: '.9em' }}
+          >
+            ・{new Date(chat.createdAt).toLocaleString()}
+          </Typography>
+        </Typography>
         <Typography sx={{ color: 'rgba(0, 0, 0, 0.65)', fontSize: '.9em' }}>
-          {chat.content}・{new Date(chat.createdAt).toLocaleString()}
+          {chat.content}
         </Typography>
       </Box>
       {chat.sending && (
@@ -68,6 +68,8 @@ export function ChatInfo({
 }
 
 export function ChatMessages() {
+  const socket = useSocket();
+
   const params = useParams();
   const ref = useRef<HTMLDivElement>(null);
 
@@ -146,13 +148,16 @@ export function ChatMessages() {
   useEffect(() => {
     if (!ref.current) return;
 
+    let trigger = false;
     const loadMore = () => {
       if (!ref.current) return;
 
       if (
+        !trigger &&
         ref.current.clientHeight - ref.current.scrollTop >=
-        ref.current.scrollHeight - 100
+          ref.current.scrollHeight - 100
       ) {
+        trigger = true;
         if (!isLoading && hasMore) {
           loadChats(page);
         }
@@ -164,15 +169,15 @@ export function ChatMessages() {
     return () => {
       ref.current?.removeEventListener('scroll', loadMore);
     };
-  }, [ref, page, isLoading]);
+  }, [ref, page, isLoading, hasMore]);
 
   useEffect(() => {
     socket.on('connect', () => {
-      console.log('socket connected');
+      console.log('socket connected:', socket.id);
     });
 
     socket.on('disconnect', () => {
-      console.log('socket disconnected');
+      console.log('socket disconnected:', socket.id);
     });
 
     socket.on('msg', (data: Chat) => {
@@ -208,7 +213,7 @@ export function ChatMessages() {
       socket.off('msg');
       socket.off('sendErr');
     };
-  }, []);
+  }, [socket]);
 
   function onSend(e: any, toUserInfo: User | null, shopInfo: Shop | null) {
     e?.preventDefault();

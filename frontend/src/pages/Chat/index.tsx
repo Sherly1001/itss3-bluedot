@@ -44,9 +44,15 @@ export function ChatInfo({
         <Box>
           <Typography sx={{ color: 'rgba(0, 0, 0, 0.8)' }}>
             {isShop ? user?.name : shop.name}
+            <Typography
+              component="span"
+              sx={{ color: 'rgba(0, 0, 0, 0.65)', fontSize: '.9em' }}
+            >
+              ・{new Date(chat.createdAt).toLocaleString()}
+            </Typography>
           </Typography>
           <Typography sx={{ color: 'rgba(0, 0, 0, 0.65)', fontSize: '.9em' }}>
-            {name}: {chat.content}・{new Date(chat.createdAt).toLocaleString()}
+            {name}: {chat.content}
           </Typography>
         </Box>
       </Box>
@@ -97,11 +103,14 @@ export function ChatList() {
   }, []);
 
   useEffect(() => {
+    let trigger = false;
     const loadMore = () => {
       if (
+        !trigger &&
         window.innerHeight + document.documentElement.scrollTop >=
-        (document.scrollingElement?.scrollHeight ?? 0) - 100
+          (document.scrollingElement?.scrollHeight ?? 0) - 100
       ) {
+        trigger = true;
         if (!isLoading && hasMore) {
           loadChats(page);
         }
@@ -113,7 +122,7 @@ export function ChatList() {
     return () => {
       window.removeEventListener('scroll', loadMore);
     };
-  }, [page, isLoading]);
+  }, [page, isLoading, hasMore]);
 
   return (
     <Container maxWidth="lg">
