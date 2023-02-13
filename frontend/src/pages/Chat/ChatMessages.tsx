@@ -182,6 +182,17 @@ export function ChatMessages() {
     });
 
     socket.on('msg', (data: Chat) => {
+      if (
+        ![
+          data.from?.id,
+          data.fromShop?.id,
+          data.to?.id,
+          data.toShop?.id,
+        ].includes(params.to as any)
+      ) {
+        return;
+      }
+
       setChats((chats) => {
         const idx = chats.findIndex(
           (c) =>
