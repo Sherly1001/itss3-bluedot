@@ -163,7 +163,7 @@ function Navigation() {
                     style={{ color: '#333' }}
                     onClick={handleAdminClose}
                   >
-                    詳細なサービス
+                    運送サービス
                   </NavLink>
                 </MenuItem>
               </Menu>

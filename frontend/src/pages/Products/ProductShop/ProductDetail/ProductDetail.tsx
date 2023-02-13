@@ -1,10 +1,11 @@
 import { Box, Button, Container, Typography, Rating } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import { Price, Product } from '../../../../type/product';
 import { Avatar, Input, List, Pagination } from 'antd';
 import { useEffect, useState } from 'react';
 import axiosInstance from '../../../../requests/axiosInstance';
 import { Shop } from '../../../../type/shop';
+import { ConstanthPathEnum } from '../../../../constanth/constanth.path';
 
 const { TextArea } = Input;
 
@@ -206,9 +207,35 @@ function ProductDetail() {
               <Typography
                 variant="h6"
                 component="div"
-                sx={{ display: 'flex', justifyContent: 'flex-start' }}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                  width: '60%',
+                }}
               >
                 {price?.shop.name}
+              </Typography>
+              <Typography
+                variant="h6"
+                component="div"
+                sx={{ display: 'flex', justifyContent: 'flex-start' }}
+              >
+                <NavLink
+                  to={
+                    localStorage.getItem('token')
+                      ? ConstanthPathEnum.CHAT_INDEX + '/' + params.shop_id
+                      : ConstanthPathEnum.SIGN_IN
+                  }
+                >
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    size="medium"
+                    sx={{ width: '100px', fontWeight: '600', color: '#fff' }}
+                  >
+                    チャット
+                  </Button>
+                </NavLink>
               </Typography>
             </Box>
           </Box>
